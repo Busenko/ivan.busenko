@@ -103,187 +103,138 @@ window.addEventListener("DOMContentLoaded", function () {
     
 
 
-
-    // let left = 0;
-    // let isAnimating = false;
-    // const slideBlock = document.querySelector('.slider-block');
-    // const slider = document.querySelector('.slider');
+    let left = 0; // Поточна позиція слайдера
+    let isAnimating = false; // Прапор для перевірки анімації
+    const slideBlock = document.querySelector('.slider-block'); // Контейнер зі слайдами
+    const slider = document.querySelector('.slider'); // Основний контейнер слайдера
     
-    // // Клонування для безшовного зациклення
-    // const slides = document.querySelectorAll('.slide');
-    // const firstSlide = slides[0].cloneNode(true);
-    // const lastSlide = slides[slides.length - 1].cloneNode(true);
-    // slideBlock.appendChild(firstSlide);
-    // slideBlock.insertBefore(lastSlide, slides[0]);
+    // Клонування першого і останнього слайдів для безшовного зациклення
+    const slides = document.querySelectorAll('.slide'); // Отримуємо всі слайди
+    const firstSlide = slides[0].cloneNode(true); // Клонування першого слайда
+    const lastSlide = slides[slides.length - 1].cloneNode(true); // Клонування останнього слайда
+    slideBlock.appendChild(firstSlide); // Додаємо перший слайд в кінець
+    slideBlock.insertBefore(lastSlide, slides[0]); // Додаємо останній слайд на початок
     
-    // const updateDimensions = () => {
-    //     slideWidth = slider.clientWidth;
-    //     left = slideWidth;
-    //     slideBlock.style.transform = `translateX(-${left}px)`;
-    //     slideBlock.style.transition = 'none';
-    // };
+    let slideWidth = slider.clientWidth; // Ширина слайда, залежить від ширини контейнера
     
-    // window.addEventListener('resize', updateDimensions);
-    // updateDimensions();
-    
-    // const updatePosition = (animate = true) => {
-    //     slideBlock.style.transition = animate ? 'all 0.5s ease' : 'none';
-    //     slideBlock.style.transform = `translateX(-${left}px)`;
-    // };
-    
-    // const nextSlide = () => {
-    //     if (isAnimating) return;
-    //     isAnimating = true;
-    //     left += slideWidth;
-    //     updatePosition();
-    //     if (left >= slideBlock.scrollWidth - slideWidth) {
-    //         setTimeout(() => {
-    //             left = slideWidth;
-    //             updatePosition(false);
-    //             isAnimating = false;
-    //         }, 500);
-    //     } else {
-    //         setTimeout(() => isAnimating = false, 500);
-    //     }
-    // };
-    
-    // const prevSlide = () => {
-    //     if (isAnimating) return;
-    //     isAnimating = true;
-    //     left -= slideWidth;
-    //     updatePosition();
-    //     if (left <= 0) {
-    //         setTimeout(() => {
-    //             left = slideBlock.scrollWidth - 2 * slideWidth;
-    //             updatePosition(false);
-    //             isAnimating = false;
-    //         }, 500);
-    //     } else {
-    //         setTimeout(() => isAnimating = false, 500);
-    //     }
-    // };
-    
-    // // Підтримка свайпів
-    // let startX = 0;
-    // let endX = 0;
-    
-    // slider.addEventListener('touchstart', (e) => {
-    //     startX = e.touches[0].clientX;
-    // });
-    
-    // slider.addEventListener('touchmove', (e) => {
-    //     endX = e.touches[0].clientX;
-    // });
-    
-    // slider.addEventListener('touchend', () => {
-    //     if (isAnimating) return;
-    //     if (startX - endX > 50) nextSlide();
-    //     if (endX - startX > 50) prevSlide();
-    // });
-    
-    // const arrowNext = document.querySelector('.arrow-next');
-    // const arrowPrev = document.querySelector('.arrow-prev');
-    // arrowNext.addEventListener('click', nextSlide);
-    // arrowPrev.addEventListener('click', prevSlide);
-    let left = 0;
-    let isAnimating = false;
-    const slideBlock = document.querySelector('.slider-block');
-    const slider = document.querySelector('.slider');
-    
-    // Клонування для безшовного зациклення
-    const slides = document.querySelectorAll('.slide');
-    const firstSlide = slides[0].cloneNode(true);
-    const lastSlide = slides[slides.length - 1].cloneNode(true);
-    slideBlock.appendChild(firstSlide);
-    slideBlock.insertBefore(lastSlide, slides[0]);
-    
-    let slideWidth = slider.clientWidth; // Ініціалізація ширини слайда
-    
+    // Функція для оновлення розмірів слайдера під час зміни розміру вікна
     const updateDimensions = () => {
-        slideWidth = slider.clientWidth;
+        slideWidth = slider.clientWidth; // Перерахунок ширини слайда
+        
+        // Перевірка коректності ширини
+        // if (slideWidth <= 0) {
+        //     console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
+        //     return;
+        // }
+    
+        left = slideWidth; // Початкова позиція слайдера (після клонованого слайда)
+        slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до початкового стану
+        // slideBlock.style.transition = 'none'; // Вимкнення анімації під час ініціалізації
+    
+        // Оновлення ширини контейнера і окремих слайдів
+        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`; // Враховуємо два клоновані слайди
+        document.querySelectorAll('.slide').forEach(slide => {
+            slide.style.width = `${slideWidth}px`; // Задаємо однакову ширину для всіх слайдів
+        });
+    };
+    
+    // // Відстеження зміни розміру вікна
+    // window.addEventListener('resize', updateDimensions);
+    // updateDimensions(); // Ініціалізація після завантаження
+
+    window.addEventListener('resize', () => {
+        // Збереження відношення поточної позиції до ширини слайдів
+        const currentSlideIndex = Math.round(left / slideWidth); // Індекс активного слайда
+        slideWidth = slider.clientWidth; // Оновлення ширини слайда
     
         if (slideWidth <= 0) {
             console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
             return;
         }
     
-        left = slideWidth;
-        slideBlock.style.transform = `translateX(-${left}px)`;
-        slideBlock.style.transition = 'none';
-    
-        // Перевірка на адаптивність: оновлюємо розміри слайдів
+        // Оновлення розмірів слайдерного блоку та окремих слайдів
         slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`;
         });
-    };
     
-    window.addEventListener('resize', updateDimensions);
-    updateDimensions();
+        // Відновлення позиції слайдера після зміни розміру
+        left = currentSlideIndex * slideWidth; // Позиція з урахуванням нового розміру
+        slideBlock.style.transition = 'none'; // Вимкнення анімації
+        slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до правильної позиції
+    });
     
+
+
+    
+    // Функція для оновлення позиції слайдера
     const updatePosition = (animate = true) => {
-        slideBlock.style.transition = animate ? 'all 0.5s ease' : 'none';
-        slideBlock.style.transform = `translateX(-${left}px)`;
+        slideBlock.style.transition = animate ? 'all 0.5s ease' : 'none'; // Включення/виключення анімації
+        slideBlock.style.transform = `translateX(-${left}px)`; // Зсув слайдера
     };
     
+    // Переміщення на наступний слайд
     const nextSlide = () => {
-        if (isAnimating) return;
-        isAnimating = true;
-        left += slideWidth;
+        if (isAnimating) return; // Уникаємо накладання анімацій
+        isAnimating = true; // Встановлюємо прапор анімації
+        left += slideWidth; // Збільшуємо позицію
     
-        updatePosition();
+        updatePosition(); // Оновлюємо положення
     
+        // Якщо досягли кінця, переносимо на початок
         if (left >= slideBlock.scrollWidth - slideWidth) {
             setTimeout(() => {
-                left = slideWidth;
-                updatePosition(false);
-                isAnimating = false;
+                left = slideWidth; // Повертаємо до початкової позиції
+                updatePosition(false); // Без анімації
+                isAnimating = false; // Скидаємо прапор анімації
             }, 500);
         } else {
-            setTimeout(() => isAnimating = false, 500);
+            setTimeout(() => isAnimating = false, 500); // Скидаємо прапор після завершення анімації
         }
     };
     
+    // Переміщення на попередній слайд
     const prevSlide = () => {
-        if (isAnimating) return;
-        isAnimating = true;
-        left -= slideWidth;
+        if (isAnimating) return; // Уникаємо накладання анімацій
+        isAnimating = true; // Встановлюємо прапор анімації
+        left -= slideWidth; // Зменшуємо позицію
     
-        updatePosition();
+        updatePosition(); // Оновлюємо положення
     
+        // Якщо досягли початку, переносимо на кінець
         if (left <= 0) {
             setTimeout(() => {
-                left = slideBlock.scrollWidth - 2 * slideWidth;
-                updatePosition(false);
-                isAnimating = false;
+                left = slideBlock.scrollWidth - 2 * slideWidth; // Позиція перед останнім слайдом
+                updatePosition(false); // Без анімації
+                isAnimating = false; // Скидаємо прапор анімації
             }, 500);
         } else {
-            setTimeout(() => isAnimating = false, 500);
+            setTimeout(() => isAnimating = false, 500); // Скидаємо прапор після завершення анімації
         }
     };
     
-    // Підтримка свайпів
-    let startX = 0;
-    let endX = 0;
+    // Підтримка свайпів на мобільних пристроях
+    let startX = 0; // Початкова точка свайпу
+    let endX = 0; // Кінцева точка свайпу
     
     slider.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
+        startX = e.touches[0].clientX; // Зберігаємо початкову координату
     });
     
     slider.addEventListener('touchmove', (e) => {
-        endX = e.touches[0].clientX;
+        endX = e.touches[0].clientX; // Зберігаємо кінцеву координату
     });
     
     slider.addEventListener('touchend', () => {
-        if (isAnimating) return;
+        if (isAnimating) return; // Перевірка анімації
     
-        if (startX - endX > 50) nextSlide();
-        if (endX - startX > 50) prevSlide();
+        if (startX - endX > 100) nextSlide(); // Якщо свайп вліво
+        if (endX - startX > 100) prevSlide(); // Якщо свайп вправо
     });
     
-    // Кнопки керування
-    const arrowNext = document.querySelector('.arrow-next');
-    const arrowPrev = document.querySelector('.arrow-prev');
+    // Керування через кнопки
+    const arrowNext = document.querySelector('.arrow-next'); // Кнопка наступного слайда
+    const arrowPrev = document.querySelector('.arrow-prev'); // Кнопка попереднього слайда
     
     arrowNext.addEventListener('click', nextSlide);
     arrowPrev.addEventListener('click', prevSlide);
@@ -293,8 +244,11 @@ window.addEventListener("DOMContentLoaded", function () {
         if (slides.length === 0) {
             console.warn("Слайди не знайдено. Перевірте правильність розмітки.");
         }
-        updateDimensions();
+        updateDimensions(); // Ініціалізація розмірів
     });
+
+
+    
     
 
 });
