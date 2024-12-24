@@ -1282,6 +1282,8 @@ margin: 5px 5px;
     height: auto; /* Висота адаптується до контенту */
     overflow: hidden;
     position: relative;
+
+   
 }
 
 .slider-block {
@@ -1295,6 +1297,8 @@ margin: 5px 5px;
     width: 100%;
     height: auto; /* Підлаштовується під контент */
     position: relative;
+
+    
 }
 
 .slide img {
@@ -1364,7 +1368,7 @@ margin: 5px 5px;
     top: 0;
     /* background-color: rgba(0, 0, 0, 0.1); */
     display: flex;
-    opacity: 1;
+    opacity: 0.5;
   
     align-items: center;
     color: #403332;
@@ -1396,8 +1400,8 @@ margin: 5px 5px;
     }
 
     .arrow-prev, .arrow-next {
-        width: 20px;
-        font-size: 16px;
+        width: 10px;
+        font-size: 14px;
     }
 
 
@@ -1591,50 +1595,6 @@ margin: 5px 5px;
     
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
