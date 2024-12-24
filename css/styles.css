@@ -1268,7 +1268,7 @@ margin: 5px 5px;
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 850px;
     width: 100%;
     height: auto; /* Автоматична висота для адаптації до контенту */
     position: relative;
@@ -1393,7 +1393,35 @@ margin: 5px 5px;
 }
 
 
+
+.svg__link{
+    width: 20px;
+    margin-right: 5px;
+}
+
+
+
+/* //////////////////////////////////////////////////// */
+
+/* ////////////////////////////////////////////////////////// */
+
+/* Для великих екранів */
+@media (min-width: 1900px) {
+    .container {
+        max-width: 1200px; /* Збільшений розмір */
+        width: 100%;
+        height: auto; /* Автоматична висота */
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
 @media (max-width: 1000px) {
+
+
     .container {
         max-width: 100%;
     }
