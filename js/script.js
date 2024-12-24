@@ -138,31 +138,31 @@ window.addEventListener("DOMContentLoaded", function () {
         });
     };
     
-    // // Відстеження зміни розміру вікна
-    // window.addEventListener('resize', updateDimensions);
-    // updateDimensions(); // Ініціалізація після завантаження
+    // Відстеження зміни розміру вікна
+    window.addEventListener('resize', updateDimensions);
+    updateDimensions(); // Ініціалізація після завантаження
 
-    window.addEventListener('resize', () => {
-        // Збереження відношення поточної позиції до ширини слайдів
-        const currentSlideIndex = Math.round(left / slideWidth); // Індекс активного слайда
-        slideWidth = slider.clientWidth; // Оновлення ширини слайда
+    // window.addEventListener('resize', () => {
+    //     // Збереження відношення поточної позиції до ширини слайдів
+    //     const currentSlideIndex = Math.round(left / slideWidth); // Індекс активного слайда
+    //     slideWidth = slider.clientWidth; // Оновлення ширини слайда
     
-        if (slideWidth <= 0) {
-            console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
-            return;
-        }
+    //     if (slideWidth <= 0) {
+    //         console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
+    //         return;
+    //     }
     
-        // Оновлення розмірів слайдерного блоку та окремих слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
-        document.querySelectorAll('.slide').forEach(slide => {
-            slide.style.width = `${slideWidth}px`;
-        });
+    //     // Оновлення розмірів слайдерного блоку та окремих слайдів
+    //     slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
+    //     document.querySelectorAll('.slide').forEach(slide => {
+    //         slide.style.width = `${slideWidth}px`;
+    //     });
     
-        // Відновлення позиції слайдера після зміни розміру
-        left = currentSlideIndex * slideWidth; // Позиція з урахуванням нового розміру
-        slideBlock.style.transition = 'none'; // Вимкнення анімації
-        slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до правильної позиції
-    });
+    //     // Відновлення позиції слайдера після зміни розміру
+    //     left = currentSlideIndex * slideWidth; // Позиція з урахуванням нового розміру
+    //     slideBlock.style.transition = 'none'; // Вимкнення анімації
+    //     slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до правильної позиції
+    // });
     
 
 
