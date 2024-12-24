@@ -234,24 +234,24 @@ window.addEventListener("DOMContentLoaded", function () {
         }
     };
     
-    // Підтримка свайпів на мобільних пристроях
-    let startX = 0; // Початкова точка свайпу
-    let endX = 0; // Кінцева точка свайпу
+    // // Підтримка свайпів на мобільних пристроях
+    // let startX = 0; // Початкова точка свайпу
+    // let endX = 0; // Кінцева точка свайпу
     
-    slider.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX; // Зберігаємо початкову координату
-    });
+    // slider.addEventListener('touchstart', (e) => {
+    //     startX = e.touches[0].clientX; // Зберігаємо початкову координату
+    // });
     
-    slider.addEventListener('touchmove', (e) => {
-        endX = e.touches[0].clientX; // Зберігаємо кінцеву координату
-    });
+    // slider.addEventListener('touchmove', (e) => {
+    //     endX = e.touches[0].clientX; // Зберігаємо кінцеву координату
+    // });
     
-    slider.addEventListener('touchend', () => {
-        if (isAnimating) return; // Перевірка анімації
+    // slider.addEventListener('touchend', () => {
+    //     if (isAnimating) return; // Перевірка анімації
     
-        if (startX - endX > 50) nextSlide(); // Якщо свайп вліво
-        if (endX - startX > 50) prevSlide(); // Якщо свайп вправо
-    });
+    //     if (startX - endX > 50) nextSlide(); // Якщо свайп вліво
+    //     if (endX - startX > 50) prevSlide(); // Якщо свайп вправо
+    // });
     
     // Керування через кнопки
     const arrowNext = document.querySelector('.arrow-next'); // Кнопка наступного слайда
