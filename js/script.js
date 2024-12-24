@@ -101,7 +101,21 @@ window.addEventListener("DOMContentLoaded", function () {
     
     itemsControl();
     
+// Визначаємо висоти верхнього та нижнього блоків
+const slideTopHeight = document.querySelector('.slide__top').offsetHeight;
+const slideBottomHeight = document.querySelector('.slide__bottom').offsetHeight;
+const slideHeight = document.querySelector('.img__height').offsetHeight;
+// Призначаємо ці значення як змінні CSS
 
+
+document.documentElement.style.setProperty('--slide-height', `${slideHeight}px`);
+
+
+document.documentElement.style.setProperty('--slide-top-height', `${slideTopHeight}px`);
+document.documentElement.style.setProperty('--slide-bottom-height', `${slideBottomHeight}px`);
+
+
+    // SLIDER
 
     let left = 0; // Поточна позиція слайдера
     let isAnimating = false; // Прапор для перевірки анімації
