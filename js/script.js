@@ -138,31 +138,52 @@ window.addEventListener("DOMContentLoaded", function () {
         });
     };
     
-    // Відстеження зміни розміру вікна
-    window.addEventListener('resize', updateDimensions);
-    updateDimensions(); // Ініціалізація після завантаження
+   
+        // Оновлення ширини слайдів при завантаженні
+        slideWidth = slider.clientWidth;
+    
+        if (slideWidth <= 0) {
+            console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
+            return;
+        }
+    
+        // Налаштування ширини контейнера та слайдів
+        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
+        document.querySelectorAll('.slide').forEach(slide => {
+            slide.style.width = `${slideWidth}px`;
+        });
+    
+        // Початкова позиція - перший реальний слайд
+        left = slideWidth; // Переміщення на перший реальний слайд
+        slideBlock.style.transition = 'none'; // Вимкнення анімації для миттєвого переходу
+        slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до правильної позиції
 
-    // window.addEventListener('resize', () => {
-    //     // Збереження відношення поточної позиції до ширини слайдів
-    //     const currentSlideIndex = Math.round(left / slideWidth); // Індекс активного слайда
-    //     slideWidth = slider.clientWidth; // Оновлення ширини слайда
     
-    //     if (slideWidth <= 0) {
-    //         console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
-    //         return;
-    //     }
+    // // Відстеження зміни розміру вікна
+    // window.addEventListener('resize', updateDimensions);
+    // updateDimensions(); // Ініціалізація після завантаження
+
+    window.addEventListener('resize', () => {
+        // Збереження відношення поточної позиції до ширини слайдів
+        const currentSlideIndex = Math.round(left / slideWidth); // Індекс активного слайда
+        slideWidth = slider.clientWidth; // Оновлення ширини слайда
     
-    //     // Оновлення розмірів слайдерного блоку та окремих слайдів
-    //     slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
-    //     document.querySelectorAll('.slide').forEach(slide => {
-    //         slide.style.width = `${slideWidth}px`;
-    //     });
+        if (slideWidth <= 0) {
+            console.warn("Некоректна ширина слайда. Перевірте розмітку або стилі.");
+            return;
+        }
     
-    //     // Відновлення позиції слайдера після зміни розміру
-    //     left = currentSlideIndex * slideWidth; // Позиція з урахуванням нового розміру
-    //     slideBlock.style.transition = 'none'; // Вимкнення анімації
-    //     slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до правильної позиції
-    // });
+        // Оновлення розмірів слайдерного блоку та окремих слайдів
+        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
+        document.querySelectorAll('.slide').forEach(slide => {
+            slide.style.width = `${slideWidth}px`;
+        });
+    
+        // Відновлення позиції слайдера після зміни розміру
+        left = currentSlideIndex * slideWidth; // Позиція з урахуванням нового розміру
+        slideBlock.style.transition = 'none'; // Вимкнення анімації
+        slideBlock.style.transform = `translateX(-${left}px)`; // Зсув до правильної позиції
+    });
     
 
 
@@ -228,8 +249,8 @@ window.addEventListener("DOMContentLoaded", function () {
     slider.addEventListener('touchend', () => {
         if (isAnimating) return; // Перевірка анімації
     
-        if (startX - endX > 100) nextSlide(); // Якщо свайп вліво
-        if (endX - startX > 100) prevSlide(); // Якщо свайп вправо
+        if (startX - endX > 50) nextSlide(); // Якщо свайп вліво
+        if (endX - startX > 50) prevSlide(); // Якщо свайп вправо
     });
     
     // Керування через кнопки
