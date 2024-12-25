@@ -1289,7 +1289,7 @@ margin: 5px 5px;
 .slider-block {
     display: flex;
     height: auto; /* Динамічна висота для адаптації */
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
 }
 
 .slide {
