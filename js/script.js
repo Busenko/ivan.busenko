@@ -117,92 +117,99 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
 
     // // SLIDER
 const visibleClones = 3;
-    const slideBlock = document.querySelector('.slider-block');
-    const slider = document.querySelector('.slider');
-    const arrowNext = document.querySelector('.arrow-next');
-    const arrowPrev = document.querySelector('.arrow-prev');
-    let slides = Array.from(document.querySelectorAll('.slide'));
+const slideBlock = document.querySelector('.slider-block');
+const slider = document.querySelector('.slider');
+const arrowNext = document.querySelector('.arrow-next');
+const arrowPrev = document.querySelector('.arrow-prev');
+let slides = Array.from(document.querySelectorAll('.slide'));
 
-    // Клонуємо по 3 з обох боків
-    for (let i = 0; i < visibleClones; i++) {
-        const cloneStart = slides[i].cloneNode(true);
-        cloneStart.classList.add('clone');
-        slideBlock.appendChild(cloneStart);
+// Клонуємо останні 3 слайди (для початку)
+for (let i = slides.length - visibleClones; i < slides.length; i++) {
+    const clone = slides[i].cloneNode(true);
+    clone.classList.add('clone');
+    slideBlock.insertBefore(clone, slideBlock.firstChild);
+}
 
-        const cloneEnd = slides[slides.length - 1 - i].cloneNode(true);
-        cloneEnd.classList.add('clone');
-        slideBlock.insertBefore(cloneEnd, slideBlock.firstChild);
-    }
+// Клонуємо перші 3 слайди (для кінця)
+for (let i = 0; i < visibleClones; i++) {
+    const clone = slides[i].cloneNode(true);
+    clone.classList.add('clone');
+    slideBlock.appendChild(clone);
+}
 
-    slides = Array.from(document.querySelectorAll('.slide'));
-    let slideWidth = slider.clientWidth;
-    let left = slideWidth * visibleClones;
-    let isAnimating = false;
+// Оновлюємо список слайдів після клонування
+slides = Array.from(document.querySelectorAll('.slide'));
 
-    const updateDimensions = () => {
-        slideWidth = slider.clientWidth;
-        left = slideWidth * visibleClones;
-        slideBlock.style.width = `${slideWidth * slides.length}px`;
-        slides.forEach(slide => {
-            slide.style.width = `${slideWidth}px`;
-        });
-        slideBlock.style.transition = 'none';
-        slideBlock.style.transform = `translateX(-${left}px)`;
-        requestAnimationFrame(() => {
-            slideBlock.style.transition = 'all 0.5s ease';
-        });
-    };
+let slideWidth = slider.clientWidth;
+let left = slideWidth * visibleClones;
+let isAnimating = false;
 
-    const updatePosition = (animate = true) => {
-        slideBlock.style.transition = animate ? 'all 0.5s ease' : 'none';
-        slideBlock.style.transform = `translateX(-${left}px)`;
-    };
-
-    const nextSlide = () => {
-        if (isAnimating) return;
-        isAnimating = true;
-        left += slideWidth;
-        updatePosition(true);
-
-        setTimeout(() => {
-            if (left >= slideWidth * (slides.length - visibleClones)) {
-                left = slideWidth * visibleClones;
-                updatePosition(false);
-            }
-            isAnimating = false;
-        }, 500);
-    };
-
-    const prevSlide = () => {
-        if (isAnimating) return;
-        isAnimating = true;
-        left -= slideWidth;
-        updatePosition(true);
-
-        setTimeout(() => {
-            if (left < slideWidth) {
-                left = slideWidth * (slides.length - 2 * visibleClones);
-                updatePosition(false);
-            }
-            isAnimating = false;
-        }, 500);
-    };
-
-    arrowNext.addEventListener('click', nextSlide);
-    arrowPrev.addEventListener('click', prevSlide);
-
-    window.addEventListener('resize', () => {
-        const currentIndex = Math.round(left / slideWidth);
-        slideWidth = slider.clientWidth;
-        slideBlock.style.width = `${slideWidth * slides.length}px`;
-        slides.forEach(slide => {
-            slide.style.width = `${slideWidth}px`;
-        });
-        left = currentIndex * slideWidth;
-        updatePosition(false);
+// Далі все як у тебе:
+const updateDimensions = () => {
+    slideWidth = slides[0].getBoundingClientRect().width;
+    left = slideWidth * visibleClones;
+    slideBlock.style.width = `${slideWidth * slides.length}px`;
+    slides.forEach(slide => {
+        slide.style.width = `${slideWidth}px`;
     });
+    slideBlock.style.transition = 'none';
+    slideBlock.style.transform = `translateX(-${left}px)`;
+    requestAnimationFrame(() => {
+        slideBlock.style.transition = 'all 0.5s ease';
+    });
+};
 
-    updateDimensions();
+const updatePosition = (animate = true) => {
+    slideBlock.style.transition = animate ? 'all 0.5s ease' : 'none';
+    slideBlock.style.transform = `translateX(-${left}px)`;
+};
+
+const nextSlide = () => {
+    if (isAnimating) return;
+    isAnimating = true;
+    left += slideWidth;
+    updatePosition(true);
+
+    setTimeout(() => {
+        if (left >= slideWidth * (slides.length - visibleClones)) {
+            left = slideWidth * visibleClones;
+            updatePosition(false);
+        }
+        isAnimating = false;
+    }, 500);
+};
+
+const prevSlide = () => {
+    if (isAnimating) return;
+    isAnimating = true;
+    left -= slideWidth;
+    updatePosition(true);
+
+    setTimeout(() => {
+        if (left < slideWidth) {
+            left = slideWidth * (slides.length - 2 * visibleClones);
+            updatePosition(false);
+        }
+        isAnimating = false;
+    }, 500);
+};
+
+arrowNext.addEventListener('click', nextSlide);
+arrowPrev.addEventListener('click', prevSlide);
+
+window.addEventListener('resize', () => {
+    const currentIndex = Math.round(left / slideWidth);
+    slideWidth = slides[0].getBoundingClientRect().width;
+    slideBlock.style.width = `${slideWidth * slides.length}px`;
+    slides.forEach(slide => {
+        slide.style.width = `${slideWidth}px`;
+    });
+    left = currentIndex * slideWidth;
+    updatePosition(false);
+});
+
+updateDimensions();
+
     // let left = 0; // Поточна позиція слайдера
     // let isAnimating = false; // Прапор для перевірки анімації
     // const slideBlock = document.querySelector('.slider-block'); // Контейнер зі слайдами
