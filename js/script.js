@@ -126,7 +126,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
     // Клонування першого і останнього слайдів для безшовного зациклення
     const slides = document.querySelectorAll('.slide'); // Отримуємо всі слайди
     const firstSlide = slides[0].cloneNode(true); // Клонування першого слайда
-    const lastSlide = slides[slides.length - 1].cloneNode(true); // Клонування останнього слайда
+    const lastSlide = slides[slides.length - 2].cloneNode(true); // Клонування останнього слайда
     slideBlock.appendChild(firstSlide); // Додаємо перший слайд в кінець
     slideBlock.insertBefore(lastSlide, slides[0]); // Додаємо останній слайд на початок
     
@@ -147,7 +147,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         // slideBlock.style.transition = 'none'; // Вимкнення анімації під час ініціалізації
     
         // Оновлення ширини контейнера і окремих слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 1)}px`; // Враховуємо два клоновані слайди
+        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`; // Враховуємо два клоновані слайди
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`; // Задаємо однакову ширину для всіх слайдів
         });
@@ -163,7 +163,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         }
     
         // Налаштування ширини контейнера та слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 1)}px`;
+        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`;
         });
@@ -189,7 +189,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         }
     
         // Оновлення розмірів слайдерного блоку та окремих слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 1)}px`;
+        slideBlock.style.width = `${slideWidth * (slides.length + 2)}px`;
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`;
         });
@@ -240,7 +240,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         // Якщо досягли початку, переносимо на кінець
         if (left <= 0) {
             setTimeout(() => {
-                left = slideBlock.scrollWidth - 1 * slideWidth; // Позиція перед останнім слайдом
+                left = slideBlock.scrollWidth - 2 * slideWidth; // Позиція перед останнім слайдом
                 updatePosition(false); // Без анімації
                 isAnimating = false; // Скидаємо прапор анімації
             }, 500);
