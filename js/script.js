@@ -116,26 +116,35 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
 
 
     // // SLIDER
-// SLIDER
-
 let left = 0;
 let isAnimating = false;
+const CLONE_COUNT = 2; // Кількість слайдів для клонування з обох боків
+
 const slideBlock = document.querySelector('.slider-block');
 const slider = document.querySelector('.slider');
-let slides = document.querySelectorAll('.slide');
 
-// Клонування
-const firstSlide = slides[0].cloneNode(true);
-const lastSlide = slides[slides.length - 1].cloneNode(true);
-slideBlock.appendChild(firstSlide);
-slideBlock.insertBefore(lastSlide, slides[0]);
+let originalSlides = Array.from(document.querySelectorAll('.slide'));
+
+// Клонування останніх N слайдів на початок
+for (let i = CLONE_COUNT; i > 0; i--) {
+    const clone = originalSlides[originalSlides.length - i].cloneNode(true);
+    clone.classList.add('cloned');
+    slideBlock.insertBefore(clone, originalSlides[0]);
+}
+
+// Клонування перших N слайдів у кінець
+for (let i = 0; i < CLONE_COUNT; i++) {
+    const clone = originalSlides[i].cloneNode(true);
+    clone.classList.add('cloned');
+    slideBlock.appendChild(clone);
+}
 
 // Оновлення посилання після клонування
-slides = document.querySelectorAll('.slide');
+let slides = document.querySelectorAll('.slide');
 
 let slideWidth = slider.clientWidth;
 
-// Функція для оновлення активного слайду
+// Підсвічування активного слайду
 const highlightActiveSlide = () => {
     slides.forEach(slide => slide.classList.remove('active'));
     const currentIndex = Math.round(left / slideWidth);
@@ -157,7 +166,7 @@ const updateDimensions = () => {
         slide.style.width = `${slideWidth}px`;
     });
 
-    left = slideWidth; // після клонованого слайду
+    left = slideWidth * CLONE_COUNT;
     slideBlock.style.transition = 'none';
     slideBlock.style.transform = `translateX(-${left}px)`;
     highlightActiveSlide();
@@ -194,9 +203,9 @@ const nextSlide = () => {
     left += slideWidth;
     updatePosition();
 
-    if (left >= slideBlock.scrollWidth - slideWidth) {
+    if (left >= slideWidth * (slides.length - CLONE_COUNT)) {
         setTimeout(() => {
-            left = slideWidth;
+            left = slideWidth * CLONE_COUNT;
             updatePosition(false);
             isAnimating = false;
         }, 500);
@@ -212,9 +221,9 @@ const prevSlide = () => {
     left -= slideWidth;
     updatePosition();
 
-    if (left <= 0) {
+    if (left < slideWidth) {
         setTimeout(() => {
-            left = slideBlock.scrollWidth - 2 * slideWidth;
+            left = slideWidth * (slides.length - CLONE_COUNT * 2);
             updatePosition(false);
             isAnimating = false;
         }, 500);
@@ -223,19 +232,20 @@ const prevSlide = () => {
     }
 };
 
-// Керування кнопками
+// Кнопки
 const arrowNext = document.querySelector('.arrow-next');
 const arrowPrev = document.querySelector('.arrow-prev');
 arrowNext.addEventListener('click', nextSlide);
 arrowPrev.addEventListener('click', prevSlide);
 
-// Після завантаження
+// Завантаження
 document.addEventListener('DOMContentLoaded', () => {
     if (slides.length === 0) {
         console.warn("Слайди не знайдено.");
     }
     updateDimensions();
 });
+
 
     // let left = 0; // Поточна позиція слайдера
     // let isAnimating = false; // Прапор для перевірки анімації
