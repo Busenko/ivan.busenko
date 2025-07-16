@@ -1280,7 +1280,7 @@ margin: 5px 5px;
 .slider {
     width: 100%;
     height: auto; /* адаптивна висота */
-/*     overflow: hidden; /* важливо: сховати все поза межами */ */
+    overflow: hidden; /* важливо: сховати все поза межами */
     position: relative;
 }
 
