@@ -1277,14 +1277,14 @@ margin: 5px 5px;
     align-items: center;
 }
 
-.slider {
+/* .slider {
     width: 100%;
     height: auto; /* Висота адаптується до контенту */
     overflow: hidden;
     position: relative;
 
    
-}
+} */
 
 .slider-block {
     display: flex;
