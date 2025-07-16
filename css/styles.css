@@ -1279,23 +1279,26 @@ margin: 5px 5px;
 
 .slider {
     width: 100%;
-    height: auto; /* Висота адаптується до контенту */
-    overflow: visible;
+    height: auto; /* адаптивна висота */
+    overflow: hidden; /* важливо: сховати все поза межами */
     position: relative;
-
-   
-} 
+}
 
 .slider-block {
     display: flex;
-    height: auto; /* Динамічна висота для адаптації */
-    transition: all 0.5s ease;
+    height: auto; /* адаптивна висота */
+    transition: transform 0.5s ease; /* краще явно вказати transform */
+    will-change: transform; /* допомагає браузеру оптимізувати анімацію */
 }
 
 .slide {
     flex-shrink: 0;
- 
+    /* width задаємо через JS */
+    opacity: 0.5; /* щоб неактивні слайди були напівпрозорими */
+    transition: opacity 0.5s ease;
+    position: relative; /* для перекриття */
 }
+
 .slide.active {
     opacity: 1;
     z-index: 2;
@@ -1303,13 +1306,12 @@ margin: 5px 5px;
 
 .slide img {
     width: 100%;
-    height: auto; /* Динамічна висота для зображень */
-    object-fit: contain; /* Пропорційне масштабування */
+    height: auto;
+    object-fit: contain;
 }
 
 .slide-content {
     width: 100%;
-   
     z-index: 20;
     background-color: #e8e5d8;
     border: solid 6px #403332;
@@ -1330,8 +1332,8 @@ margin: 5px 5px;
     font-weight: 700;
     color: #403332;
     width: 100%;
-    position: relative; /* Додаємо для кращої організації перекриття */
-    z-index: 25; /* Задаємо вищий z-index, щоб блок був поверх інших елементів */
+    position: relative;
+    z-index: 25;
 }
 
 .slide__top img {
@@ -1351,7 +1353,6 @@ margin: 5px 5px;
     font-weight: 700;
     color: #e8e5d8;
     width: 100%;
-    
 }
 
 .slide__panel {
