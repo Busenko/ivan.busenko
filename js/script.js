@@ -123,28 +123,11 @@ const CLONE_COUNT = 4; // Кількість слайдів для клонув�
 const slideBlock = document.querySelector('.slider-block');
 const slider = document.querySelector('.slider');
 
-let originalSlides = Array.from(document.querySelectorAll('.slide'));
+let originalSlides = [];
+let slides = [];
+let slideWidth = 0;
 
-// Клонування останніх N слайдів на початок
-for (let i = CLONE_COUNT; i > 0; i--) {
-    const clone = originalSlides[originalSlides.length - i].cloneNode(true);
-    clone.classList.add('cloned');
-    slideBlock.insertBefore(clone, originalSlides[0]);
-}
-
-// Клонування перших N слайдів у кінець
-for (let i = 0; i < CLONE_COUNT; i++) {
-    const clone = originalSlides[i].cloneNode(true);
-    clone.classList.add('cloned');
-    slideBlock.appendChild(clone);
-}
-
-// Оновлення посилання після клонування
-let slides = document.querySelectorAll('.slide');
-
-let slideWidth = slider.clientWidth;
-
-// Підсвічування активного слайду
+// Виділення активного слайду
 const highlightActiveSlide = () => {
     slides.forEach(slide => slide.classList.remove('active'));
     const currentIndex = Math.round(left / slideWidth);
@@ -153,7 +136,7 @@ const highlightActiveSlide = () => {
     }
 };
 
-// Оновлення розмірів слайдів
+// Оновлення розмірів
 const updateDimensions = () => {
     slideWidth = slider.clientWidth;
     if (slideWidth <= 0) {
@@ -166,13 +149,13 @@ const updateDimensions = () => {
         slide.style.width = `${slideWidth}px`;
     });
 
-    left = slideWidth * CLONE_COUNT;
+    left = slideWidth * CLONE_COUNT; // позиція на перший реальний слайд
     slideBlock.style.transition = 'none';
     slideBlock.style.transform = `translateX(-${left}px)`;
     highlightActiveSlide();
 };
 
-// При зміні розміру
+// Зміна розміру вікна
 window.addEventListener('resize', () => {
     const currentSlideIndex = Math.round(left / slideWidth);
     slideWidth = slider.clientWidth;
@@ -238,12 +221,34 @@ const arrowPrev = document.querySelector('.arrow-prev');
 arrowNext.addEventListener('click', nextSlide);
 arrowPrev.addEventListener('click', prevSlide);
 
-// Завантаження
+// Завантаження сторінки
 document.addEventListener('DOMContentLoaded', () => {
-    if (slides.length === 0) {
+    // Початкові слайди
+    originalSlides = Array.from(document.querySelectorAll('.slide'));
+
+    if (originalSlides.length === 0) {
         console.warn("Слайди не знайдено.");
+        return;
     }
-    updateDimensions();
+
+    // Клонування останніх N слайдів на початок
+    for (let i = CLONE_COUNT; i > 0; i--) {
+        const clone = originalSlides[originalSlides.length - i].cloneNode(true);
+        clone.classList.add('cloned');
+        slideBlock.insertBefore(clone, originalSlides[0]);
+    }
+
+    // Клонування перших N слайдів у кінець
+    for (let i = 0; i < CLONE_COUNT; i++) {
+        const clone = originalSlides[i].cloneNode(true);
+        clone.classList.add('cloned');
+        slideBlock.appendChild(clone);
+    }
+
+    // Оновлення посилання після клонування
+    slides = document.querySelectorAll('.slide');
+
+    setTimeout(updateDimensions, 0); // дає шанс DOM повністю відмалюватись
 });
 
 
