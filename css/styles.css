@@ -1374,7 +1374,7 @@ margin: 5px 5px;
     display: flex;
     opacity: 0.8;
     align-items: center;
-    color: #403332;
+    color: #D9D6C7;
     font-size: 26px;
     font-weight: 800;
     top: calc(var(--slide-top-height)); /* Відступаємо від верхнього блоку */
