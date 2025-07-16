@@ -1294,15 +1294,15 @@ margin: 5px 5px;
 .slide {
     flex-shrink: 0;
     /* width задаємо через JS */
-    opacity: 0.5; /* щоб неактивні слайди були напівпрозорими */
-    transition: opacity 0.5s ease;
+/*     opacity: 0.5; /* щоб неактивні слайди були напівпрозорими */ */
+/*     transition: opacity 0.5s ease; */
     position: relative; /* для перекриття */
 }
 
-.slide.active {
+/* .slide.active {
     opacity: 1;
     z-index: 2;
-}
+} */
 
 .slide img {
     width: 100%;
