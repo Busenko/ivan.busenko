@@ -1388,13 +1388,13 @@ margin: 5px 5px;
 }
 
 .arrow-prev {
-    left: 6px;
+    left: 10px;
     justify-content: flex-start;
     width: 50%;
 }
 
 .arrow-next {
-    right: 6px;
+    right: 10px;
     justify-content: flex-end;
     width: 50%;
 }
