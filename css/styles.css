@@ -1260,15 +1260,19 @@ margin: 5px 5px;
 
 /* ////////////////////////////////////////////////// слайдер */
 .present {
-    width: 100%;
+    width: 100vw; /* гарантуємо ширину рівну ширині вікна */
+    max-width: 100%; /* перестрахування */
+    overflow: hidden; /* обов'язково приховати все зайве */
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Слайдер пристосовується до контенту */
-    
+    align-items: flex-start;
+    box-sizing: border-box;
+    padding: 0 10px; /* невеликі бокові відступи для вигляду */
 }
 
+
 .container {
-    max-width: 850px;
+/*     max-width: 850px; */
     width: 100%;
     height: auto; /* Автоматична висота для адаптації до контенту */
     position: relative;
@@ -1280,7 +1284,7 @@ margin: 5px 5px;
 .slider {
     width: 100%;
     height: auto; /* адаптивна висота */
-  overflow: hidden; /* важливо: сховати все поза межами */
+/*   overflow: hidden; /* важливо: сховати все поза межами */ */
     position: relative;
 }
 
