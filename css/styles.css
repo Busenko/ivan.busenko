@@ -1372,11 +1372,11 @@ margin: 5px 5px;
     z-index: 15;
     bottom: 0px;
     display: flex;
-    opacity: 0.5;
+    opacity: 0.8;
     align-items: center;
     color: #403332;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     top: calc(var(--slide-top-height)); /* Відступаємо від верхнього блоку */
 }
 
