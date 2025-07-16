@@ -1277,14 +1277,14 @@ margin: 5px 5px;
     align-items: center;
 }
 
-/* .slider {
+.slider {
     width: 100%;
     height: auto; /* Висота адаптується до контенту */
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 
    
-} */
+} 
 
 .slider-block {
     display: flex;
@@ -1294,11 +1294,11 @@ margin: 5px 5px;
 
 .slide {
     flex-shrink: 0;
-    width: 100%;
-    height: auto; /* Підлаштовується під контент */
-    position: relative;
-
-    
+ 
+}
+.slide.active {
+    opacity: 1;
+    z-index: 2;
 }
 
 .slide img {
