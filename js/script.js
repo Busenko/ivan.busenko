@@ -147,7 +147,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         // slideBlock.style.transition = 'none'; // Вимкнення анімації під час ініціалізації
     
         // Оновлення ширини контейнера і окремих слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 4)}px`; // Враховуємо два клоновані слайди
+        slideBlock.style.width = `${slideWidth * (slides.length + 1)}px`; // Враховуємо два клоновані слайди
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`; // Задаємо однакову ширину для всіх слайдів
         });
@@ -163,7 +163,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         }
     
         // Налаштування ширини контейнера та слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 4)}px`;
+        slideBlock.style.width = `${slideWidth * (slides.length + 1)}px`;
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`;
         });
@@ -189,7 +189,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         }
     
         // Оновлення розмірів слайдерного блоку та окремих слайдів
-        slideBlock.style.width = `${slideWidth * (slides.length + 4)}px`;
+        slideBlock.style.width = `${slideWidth * (slides.length + 1)}px`;
         document.querySelectorAll('.slide').forEach(slide => {
             slide.style.width = `${slideWidth}px`;
         });
@@ -240,7 +240,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
         // Якщо досягли початку, переносимо на кінець
         if (left <= 0) {
             setTimeout(() => {
-                left = slideBlock.scrollWidth - 4 * slideWidth; // Позиція перед останнім слайдом
+                left = slideBlock.scrollWidth - 1 * slideWidth; // Позиція перед останнім слайдом
                 updatePosition(false); // Без анімації
                 isAnimating = false; // Скидаємо прапор анімації
             }, 500);
