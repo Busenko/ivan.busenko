@@ -118,7 +118,7 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
     // // SLIDER
 let left = 0;
 let isAnimating = false;
-const CLONE_COUNT = 2; // Кількість слайдів для клонування з обох боків
+const CLONE_COUNT = 4; // Кількість слайдів для клонування з обох боків
 
 const slideBlock = document.querySelector('.slider-block');
 const slider = document.querySelector('.slider');
