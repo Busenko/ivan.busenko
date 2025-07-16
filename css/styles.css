@@ -1433,7 +1433,13 @@ margin: 5px 5px;
         border-radius: 0;
        
     }
+.slider {
+   
+    overflow: hidden;
+    
 
+   
+}
     .arrow-prev, .arrow-next {
        
         font-size: 14px;
