@@ -1280,13 +1280,13 @@ margin: 5px 5px;
 .slider {
     width: 100%;
     height: auto; /* адаптивна висота */
-  
+  overflow: hidden; /* важливо: сховати все поза межами */
     position: relative;
 }
 
 .slider-block {
-	width: 100%;
-	  overflow: hidden; /* важливо: сховати все поза межами */
+	
+	  
     display: flex;
     height: auto; /* адаптивна висота */
     transition: transform 0.5s ease; /* краще явно вказати transform */
