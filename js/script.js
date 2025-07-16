@@ -117,17 +117,6 @@ document.documentElement.style.setProperty('--slide-bottom-height', `${slideBott
 
     // // SLIDER
 
-// Виділення активного слайду
-const highlightActiveSlide = () => {
-    slides.forEach(slide => slide.classList.remove('active'));
-    const currentIndex = Math.round(left / slideWidth);
-    if (slides[currentIndex]) {
-        slides[currentIndex].classList.add('active');
-    }
-};
-
-
-
     let left = 0; // Поточна позиція слайдера
     let isAnimating = false; // Прапор для перевірки анімації
     const slideBlock = document.querySelector('.slider-block'); // Контейнер зі слайдами
