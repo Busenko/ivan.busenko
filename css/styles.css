@@ -1260,55 +1260,65 @@ margin: 5px 5px;
 
 /* ////////////////////////////////////////////////// слайдер */
 .present {
-    width: 100vw; /* гарантуємо ширину рівну ширині вікна */
-    max-width: 100%; /* перестрахування */
-    overflow: hidden; /* обов'язково приховати все зайве */
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    box-sizing: border-box;
-    padding: 0 10px; /* невеликі бокові відступи для вигляду */
+     overflow: hidden;
 }
 
-
 .container {
-    max-width: 850px;
-    width: 100%;
-    height: auto; /* Автоматична висота для адаптації до контенту */
+    max-width: 100vw;
+    width: 100vw;
+    height: auto;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+   
+
+}
+
+/* Плавність при завантаженні */
+.slider-block {
+    display: flex;
+    height: auto;
+    opacity: 1;
+    transition: transform 0.6s ease;
+}
+
+
+.slide {
+    flex-shrink: 0;
+    width: 100%;
+    height: auto;
+    position: relative;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+
+/* Для нецентральних слайдів */
+.slide.inactive {
+    opacity: 0.5;
+   
+    pointer-events: none;
+    transition: all 0.5s ease; 
+}
+
+
+.slide.inactive .slide__top,
+.slide.inactive .slide__bottom {
+    opacity: 0;
+    visibility: hidden;
+   
+   
 }
 
 .slider {
     width: 100%;
-    height: auto; /* адаптивна висота */
-/*   overflow: hidden; /* важливо: сховати все поза межами */ */
+    height: auto;
     position: relative;
 }
-
-.slider-block {
-	
-	  
-    display: flex;
-    height: auto; /* адаптивна висота */
-    transition: transform 0.5s ease; /* краще явно вказати transform */
-    will-change: transform; /* допомагає браузеру оптимізувати анімацію */
-}
-
-.slide {
-    flex-shrink: 0;
-    /* width задаємо через JS */
-/*     opacity: 0.5; /* щоб неактивні слайди були напівпрозорими */ */
-/*     transition: opacity 0.5s ease; */
-    position: relative; /* для перекриття */
-}
-
-/* .slide.active {
-    opacity: 1;
-    z-index: 2;
-} */
 
 .slide img {
     width: 100%;
@@ -1340,6 +1350,7 @@ margin: 5px 5px;
     width: 100%;
     position: relative;
     z-index: 25;
+     transition: opacity 0.3s ease;
 }
 
 .slide__top img {
@@ -1359,6 +1370,7 @@ margin: 5px 5px;
     font-weight: 700;
     color: #e8e5d8;
     width: 100%;
+     transition: opacity 0.3s ease;
 }
 
 .slide__panel {
@@ -1368,41 +1380,103 @@ margin: 5px 5px;
     align-items: center;
 }
 
-
-
-
 /* Стилі для кнопок */
 .arrow-prev, .arrow-next {
-    height: calc(100% - (var(--slide-top-height) + var(--slide-bottom-height) + 4%)); /* Вираховуємо висоту верхнього та нижнього блоку */
+    height: calc(100% - (var(--slide-top-height) + var(--slide-bottom-height) + 4%));
     cursor: pointer;
     position: absolute;
     z-index: 15;
     bottom: 0px;
     display: flex;
-    opacity: 0.8;
+    opacity: 0.5;
     align-items: center;
-    color: #D9D6C7;
-    font-size: 26px;
-    font-weight: 800;
-    top: calc(var(--slide-top-height)); /* Відступаємо від верхнього блоку */
+    color: #403332;
+    font-size: 20px;
+    font-weight: 700;
+    top: calc(var(--slide-top-height));
 }
 
 .arrow-prev {
-    left: 10px;
+    left: 6px;
     justify-content: flex-start;
     width: 50%;
 }
 
 .arrow-next {
-    right: 10px;
+    right: 6px;
     justify-content: flex-end;
     width: 50%;
 }
 
+.svg__link {
+    width: 20px;
+    margin-right: 5px;
+}
+
+
+
+/* Для великих екранів */
+@media (min-width: 1500px) {
+    .container {
+        max-width: 800px;
+        width: 100%;
+        height: auto;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 1000px) {
+    .container {
+        max-width: 100%;
+    }
+
+    .slide-content {
+        border: none;
+        border-top: solid 4px #403332;
+        border-bottom: solid 4px #403332;
+        border-radius: 0;
+    }
+
+    .arrow-prev, .arrow-next {
+        font-size: 14px;
+    }
+
+    .slide__top {
+        background-color: #D9C49C;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: #403332;
+        width: 100%;
+    }
+
+    .slide__top img {
+        width: 24px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+
+    .slide__bottom {
+        text-decoration: none;
+        background-color: #403332;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: #e8e5d8;
+        width: 100%;
+    }
+}
 
 
 .svg__link{
-    width: 20px;
+    width: 15px;
     margin-right: 5px;
 }
 
