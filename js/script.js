@@ -16,11 +16,6 @@ window.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-
-      
-
-
-   
  // Меню бургер...................................................................................................................
  $(document).ready(function () {
     const burgerMenu = document.querySelector('.menu__burger');
@@ -46,10 +41,7 @@ window.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-
-
-
-    // Функція для оновлення висоти футера та хедера в CSS...................................................................................................................
+// Функція для оновлення висоти футера та хедера в CSS...................................................................................................................
     function updateFooterAndHeaderHeight() {
         const footer = document.querySelector('footer');
         const header = document.querySelector('header');
@@ -64,8 +56,9 @@ window.addEventListener("DOMContentLoaded", function () {
 
     window.addEventListener('load', updateFooterAndHeaderHeight);
     window.addEventListener('resize', updateFooterAndHeaderHeight);
-// робота з відкриваючими блоками...................................................................................................................
-      function itemsControl() {
+    
+    // робота з відкриваючими блоками...................................................................................................................
+       function itemsControl() {
     const items = document.querySelectorAll('.block__item');
 
     if (!items.length) return;
@@ -99,6 +92,7 @@ itemsControl();
     
 
 });
+ // слайдер...................................................................................................................
 const ENABLE_SWIPE = true;
 
 const VISIBLE_SLIDES = 7;
