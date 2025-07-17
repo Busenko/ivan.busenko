@@ -109,22 +109,14 @@ const setHeights = (targetSlide = null) => {
 
     const slideTop = target.querySelector('.slide__top');
     const slideBottom = target.querySelector('.slide__bottom');
-    
-    // Get heights with fallback
-    const slideTopHeight = slideTop?.offsetHeight || 0;
-    const slideBottomHeight = slideBottom?.offsetHeight || 0;
     const slideHeight = target.querySelector('.img__height')?.offsetHeight || 0;
 
-    // Smooth transition for height changes
-    document.documentElement.style.transition = '--slide-height 0.6s ease, --slide-top-height 0.6s ease, --slide-bottom-height 0.6s ease';
+    const slideTopHeight = slideTop?.offsetHeight || 0;
+    const slideBottomHeight = slideBottom?.offsetHeight || 0;
+
     document.documentElement.style.setProperty('--slide-height', `${slideHeight}px`);
     document.documentElement.style.setProperty('--slide-top-height', `${slideTopHeight}px`);
     document.documentElement.style.setProperty('--slide-bottom-height', `${slideBottomHeight}px`);
-
-    // Remove transition after animation completes
-    setTimeout(() => {
-        document.documentElement.style.transition = 'none';
-    }, 600);
 };
 
 const slider = document.querySelector('.slider');
@@ -161,17 +153,17 @@ const renderSlides = () => {
     indices.forEach((index, i) => {
         const clone = slides[index].cloneNode(true);
         clone.style.width = `${slideWidth}px`;
-        
+
         if (i !== 2) {
             clone.classList.add('inactive');
-            clone.style.transform = 'scale(0.85)';
-            clone.style.opacity = '0.7';
+            clone.style.transform = 'scale(0.8)';
+            clone.style.opacity = '0.6';
         } else {
             clone.classList.remove('inactive');
-            clone.style.transform = 'scale(0.95)'; // Start slightly scaled down
-            clone.style.opacity = '0.9'; // Start slightly transparent
+            clone.style.transform = 'scale(1)';
+            clone.style.opacity = '1';
         }
-        
+
         clone.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
         clone.style.zIndex = i === 2 ? '2' : '1';
         slideBlock.appendChild(clone);
@@ -179,16 +171,14 @@ const renderSlides = () => {
 
     slideBlock.style.transition = 'none';
     slideBlock.style.transform = `translateX(-${2 * slideWidth}px)`;
-    
-    // Set heights for the new active slide
-    setTimeout(() => {
-        const activeSlide = slideBlock.children[2];
-        if (activeSlide) {
-            setHeights(activeSlide);
-            activeSlide.style.transform = 'scale(1)';
-            activeSlide.style.opacity = '1';
-        }
-    }, 10);
+
+    // Активний слайд
+    const activeSlide = slideBlock.children[2];
+    if (activeSlide) {
+        setHeights(activeSlide);
+        activeSlide.style.transform = 'scale(1)';
+        activeSlide.style.opacity = '1';
+    }
 };
 
 const handleSlideTransition = (direction) => {
@@ -196,30 +186,42 @@ const handleSlideTransition = (direction) => {
     isAnimating = true;
 
     const currentActive = document.querySelector('.slide:not(.inactive)');
-    const nextActiveIndex = direction === 'next' 
+    const nextActiveIndex = direction === 'next'
         ? (currentIndex + 1) % slides.length
         : (currentIndex - 1 + slides.length) % slides.length;
+
+    // Визначаємо новий "майбутній" активний слайд
+    const nextSlideIndex = direction === 'next' ? 3 : 1;
+    const nextSlideEl = slideBlock.children[nextSlideIndex];
     
     if (currentActive) {
-        // Animate out current active slide
         currentActive.style.transform = 'scale(0.85)';
         currentActive.style.opacity = '0.7';
         currentActive.style.zIndex = '1';
     }
 
-    // Move slides
+    if (nextSlideEl) {
+        nextSlideEl.classList.remove('inactive');
+        nextSlideEl.style.transform = 'scale(1)';
+        nextSlideEl.style.opacity = '1';
+        nextSlideEl.style.zIndex = '2';
+    }
+
+    // Запускаємо трансформацію блока
     slideBlock.style.transition = 'transform 0.6s ease';
-    slideBlock.style.transform = direction === 'next' 
+    slideBlock.style.transform = direction === 'next'
         ? `translateX(-${3 * slideWidth}px)`
         : `translateX(-${slideWidth}px)`;
 
-    // After movement completes
-    setTimeout(() => {
+    // Завершення анімації — оновлення DOM
+    slideBlock.addEventListener('transitionend', () => {
+        if (!isAnimating) return;
         currentIndex = nextActiveIndex;
-        renderSlides();
+        renderSlides(); // заново рендеримо слайди
         isAnimating = false;
-    }, 600);
+    }, { once: true });
 };
+
 
 const nextSlide = () => handleSlideTransition('next');
 const prevSlide = () => handleSlideTransition('prev');
@@ -230,12 +232,9 @@ const initSlider = () => {
     renderSlides();
     slideBlock.style.opacity = '1';
     slideBlock.style.transition = 'opacity 0.5s ease';
-    
-    // Initialize heights after first render
-    setTimeout(() => setHeights(), 100);
+    setHeights(); // без затримки
 };
 
-// Event listeners
 arrowNext.addEventListener('click', nextSlide);
 arrowPrev.addEventListener('click', prevSlide);
 
@@ -246,7 +245,6 @@ window.addEventListener('resize', () => {
 
 document.addEventListener('DOMContentLoaded', initSlider);
 
-// Keyboard navigation
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextSlide();
     if (e.key === 'ArrowLeft') prevSlide();
