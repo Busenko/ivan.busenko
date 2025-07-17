@@ -158,7 +158,7 @@ const renderSlides = () => {
             clone.style.zIndex = '2';
         } else {
             clone.classList.add('inactive');
-            clone.style.transform = 'scale(0.8)';
+            clone.style.transform = 'scale(0.6)';
             clone.style.opacity = '0.6';
             clone.style.zIndex = '1';
         }
@@ -188,7 +188,7 @@ const handleSlideTransition = (direction) => {
     const newCenter = slideBlock.children[shift];
 
     if (oldCenter) {
-        oldCenter.style.transform = 'scale(0.8)';
+        oldCenter.style.transform = 'scale(0.6)';
         oldCenter.style.opacity = '0.6';
         oldCenter.style.zIndex = '1';
     }
