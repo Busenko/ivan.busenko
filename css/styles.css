@@ -1306,13 +1306,7 @@ margin: 5px 5px;
 }
 
 
-.slide.inactive .slide__top,
-.slide.inactive .slide__bottom {
-    opacity: 0;
-    visibility: hidden;
-   
-   
-}
+
 
 .slider {
     width: 100%;
