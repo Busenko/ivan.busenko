@@ -65,41 +65,37 @@ window.addEventListener("DOMContentLoaded", function () {
     window.addEventListener('load', updateFooterAndHeaderHeight);
     window.addEventListener('resize', updateFooterAndHeaderHeight);
 // робота з відкриваючими блоками...................................................................................................................
-    function itemsControl() {
-        const coll = document.getElementsByClassName('block__item');
-        if (coll.length > 0) {
-            for (let i = 0; i < coll.length; i++) {
-                const title = coll[i].querySelector('.item__button');
-                if (title) {
-                    title.addEventListener('click', function () {
-                        let content = coll[i].querySelector('.block__item-info');
-                        let image = coll[i].querySelector('.img-rotate');
-                        if (content) {
-                            if (content.style.maxHeight) {
-                                content.style.maxHeight = null;
-                                image && image.classList.remove('rotated');
-                            } else {
-                                content.style.maxHeight = content.scrollHeight + 'px';
-                                image && image.classList.add('rotated');
-                            }
-                        }
-                    });
-                }
+      function itemsControl() {
+    const items = document.querySelectorAll('.block__item');
+
+    if (!items.length) return;
+
+    items.forEach(item => {
+        const button = item.querySelector('.item__button');
+        const content = item.querySelector('.block__item-info');
+        const image = item.querySelector('.img-rotate');
+
+        if (!button || !content) return;
+
+        button.addEventListener('click', () => {
+            const isOpen = content.style.maxHeight;
+
+            content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+            image?.classList.toggle('rotated', !isOpen);
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        items.forEach(item => {
+            const content = item.querySelector('.block__item-info');
+            if (content && content.style.maxHeight) {
+                content.style.maxHeight = content.scrollHeight + 'px';
             }
-    
-            
-            window.addEventListener('resize', function () {
-                for (let i = 0; i < coll.length; i++) {
-                    const content = coll[i].querySelector('.block__item-info');
-                    if (content && content.style.maxHeight) {
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                    }
-                }
-            });
-        }
-    }
-    
-    itemsControl();
+        });
+    });
+}
+
+itemsControl();
     
 
 });
