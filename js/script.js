@@ -103,8 +103,23 @@ window.addEventListener("DOMContentLoaded", function () {
     
 
 });
+const ENABLE_SWIPE = true;
+
 const VISIBLE_SLIDES = 7;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
+
+const slider = document.querySelector('.container');
+const slideBlock = document.querySelector('.slider-block');
+const arrowNext = document.querySelector('.arrow-next');
+const arrowPrev = document.querySelector('.arrow-prev');
+
+let slideWidth = 0;
+let isAnimating = false;
+let currentIndex = 0;
+let slides = [];
+
+let startX = 0;
+let isSwiping = false;
 
 const setHeights = (targetSlide = null) => {
     const target = targetSlide || document.querySelector('.slide:not(.inactive)');
@@ -121,16 +136,6 @@ const setHeights = (targetSlide = null) => {
     document.documentElement.style.setProperty('--slide-top-height', `${slideTopHeight}px`);
     document.documentElement.style.setProperty('--slide-bottom-height', `${slideBottomHeight}px`);
 };
-
-const slider = document.querySelector('.slider');
-const slideBlock = document.querySelector('.slider-block');
-const arrowNext = document.querySelector('.arrow-next');
-const arrowPrev = document.querySelector('.arrow-prev');
-
-let slideWidth = 0;
-let isAnimating = false;
-let currentIndex = 0;
-let slides = [];
 
 const applySlideSizes = () => {
     slideWidth = slider.clientWidth;
@@ -163,7 +168,7 @@ const renderSlides = () => {
             clone.style.zIndex = '2';
         } else {
             clone.classList.add('inactive');
-            clone.style.transform = 'scale(0.6)';
+            clone.style.transform = 'scale(0.8)';
             clone.style.opacity = '0.6';
             clone.style.zIndex = '1';
         }
@@ -189,24 +194,22 @@ const handleSlideTransition = (direction) => {
 
     const shift = direction === 'next' ? CENTER_INDEX + 1 : CENTER_INDEX - 1;
 
-    // Масштабуємо поточний центр
     const oldCenter = slideBlock.children[CENTER_INDEX];
+    const newCenter = slideBlock.children[shift];
+
     if (oldCenter) {
-        oldCenter.style.transform = 'scale(0.6)';
+        oldCenter.style.transform = 'scale(0.8)';
         oldCenter.style.opacity = '0.6';
         oldCenter.style.zIndex = '1';
     }
 
-    // Майбутній центр
-    const futureCenter = slideBlock.children[shift];
-    if (futureCenter) {
-        futureCenter.classList.remove('inactive');
-        futureCenter.style.transform = 'scale(1)';
-        futureCenter.style.opacity = '1';
-        futureCenter.style.zIndex = '2';
+    if (newCenter) {
+        newCenter.classList.remove('inactive');
+        newCenter.style.transform = 'scale(1)';
+        newCenter.style.opacity = '1';
+        newCenter.style.zIndex = '2';
     }
 
-    // Зсув слайд-блоку
     const newTranslate = -(shift * slideWidth);
     slideBlock.style.transition = 'transform 0.6s ease';
     slideBlock.style.transform = `translateX(${newTranslate}px)`;
@@ -214,13 +217,38 @@ const handleSlideTransition = (direction) => {
     slideBlock.addEventListener('transitionend', () => {
         if (!isAnimating) return;
         currentIndex = newIndex;
-        renderSlides(); // тільки після завершення масштабування
+        renderSlides();
         isAnimating = false;
     }, { once: true });
 };
 
 const nextSlide = () => handleSlideTransition('next');
 const prevSlide = () => handleSlideTransition('prev');
+
+const initSwipe = () => {
+    slider.addEventListener('touchstart', e => {
+        if (isAnimating || e.touches.length !== 1) return;
+        startX = e.touches[0].clientX;
+        isSwiping = true;
+    });
+
+    slider.addEventListener('touchmove', e => {
+        if (!isSwiping) return;
+        // можна додати перетягування
+    });
+
+    slider.addEventListener('touchend', e => {
+        if (!isSwiping) return;
+        const endX = e.changedTouches[0].clientX;
+        const delta = endX - startX;
+
+        if (Math.abs(delta) > 50) {
+            delta < 0 ? nextSlide() : prevSlide();
+        }
+
+        isSwiping = false;
+    });
+};
 
 const initSlider = () => {
     slides = Array.from(document.querySelectorAll('.slide'));
@@ -229,8 +257,11 @@ const initSlider = () => {
     slideBlock.style.opacity = '1';
     slideBlock.style.transition = 'opacity 0.5s ease';
     setHeights();
+
+    if (ENABLE_SWIPE) initSwipe(); // 
 };
 
+// Події
 arrowNext.addEventListener('click', nextSlide);
 arrowPrev.addEventListener('click', prevSlide);
 
@@ -245,3 +276,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextSlide();
     if (e.key === 'ArrowLeft') prevSlide();
 });
+
