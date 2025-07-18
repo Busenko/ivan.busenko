@@ -1498,14 +1498,13 @@ margin: 5px 5px;
 
 
     .container {
-        max-width: 100%;
+        max-width: 86%;
     }
 
     .slide-content {
-        border: none;
-        border-top: solid 4px #403332;
-        border-bottom: solid 4px #403332;
-        border-radius: 0;
+        
+        border: solid 4px #403332;
+        border-radius: 10;
        
     }
 .slider {
@@ -1526,7 +1525,7 @@ margin: 5px 5px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #403332;
         width: 100%;
@@ -1546,7 +1545,7 @@ margin: 5px 5px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #e8e5d8;
         width: 100%;
