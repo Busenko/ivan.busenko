@@ -1424,10 +1424,10 @@ margin: 5px 5px;
 
 @media (max-width: 1000px) {
     .container {
-        max-width: 95%;
+        max-width: 99%;
     }
 
-    .slide-content {
+    .slide-block {
         
         border: solid 4px #403332;
         border-radius: 10;
@@ -1442,7 +1442,7 @@ margin: 5px 5px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         color: #403332;
         width: 100%;
@@ -1460,7 +1460,7 @@ margin: 5px 5px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         color: #e8e5d8;
         width: 100%;
