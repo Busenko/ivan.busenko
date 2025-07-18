@@ -1424,14 +1424,13 @@ margin: 5px 5px;
 
 @media (max-width: 1000px) {
     .container {
-        max-width: 100%;
+        max-width: 95%;
     }
 
     .slide-content {
-        border: none;
-        border-top: solid 4px #403332;
-        border-bottom: solid 4px #403332;
-        border-radius: 0;
+        
+        border: solid 4px #403332;
+        border-radius: 10;
     }
 
     .arrow-prev, .arrow-next {
@@ -1443,7 +1442,7 @@ margin: 5px 5px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #403332;
         width: 100%;
@@ -1461,7 +1460,7 @@ margin: 5px 5px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #e8e5d8;
         width: 100%;
@@ -1479,84 +1478,6 @@ margin: 5px 5px;
 /* //////////////////////////////////////////////////// */
 
 /* ////////////////////////////////////////////////////////// */
-
-/* Для великих екранів */
-@media (min-width: 1900px) {
-    .container {
-        max-width: 1200px; /* Збільшений розмір */
-        width: 100%;
-        height: auto; /* Автоматична висота */
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
-
-@media (max-width: 1000px) {
-
-
-    .container {
-        max-width: 86%;
-    }
-
-    .slide-content {
-        
-        border: solid 4px #403332;
-        border-radius: 10;
-       
-    }
-.slider {
-   
-    overflow: hidden;
-    
-
-   
-}
-    .arrow-prev, .arrow-next {
-       
-        font-size: 14px;
-    }
-
-
-    .slide__top {
-        background-color: #D9C49C;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 12px;
-        font-weight: 700;
-        color: #403332;
-        width: 100%;
-        
-    }
-    
-    .slide__top img {
-        width: 24px;
-        cursor: pointer;
-        margin-right: 5px;
-    }
-    
-    /* Нижній блок */
-    .slide__bottom {
-        text-decoration: none;
-        background-color: #403332;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 12px;
-        font-weight: 700;
-        color: #e8e5d8;
-        width: 100%;
-        
-    }
-}
-
-
-
-
-
 
 
 
