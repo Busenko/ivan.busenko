@@ -96,7 +96,7 @@ itemsControl();
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // слайдер................................................................................................................
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const VISIBLE_SLIDES = 10;
+const VISIBLE_SLIDES = 7;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 50;
 const IS_TOUCH_DEVICE = 'ontouchstart' in window;
@@ -163,7 +163,7 @@ const renderSlides = () => {
             clone.style.zIndex = '2';
         } else {
             clone.classList.add('inactive');
-            clone.style.transform = 'scale(0.95)';
+            clone.style.transform = 'scale(0.7)';
             clone.style.opacity = '0.6';
             clone.style.zIndex = '1';
         }
@@ -190,7 +190,7 @@ const handleSlideChange = (direction) => {
 
     const oldCenter = slideBlock.children[CENTER_INDEX];
     if (oldCenter) {
-        oldCenter.style.transform = 'scale(0.95)';
+        oldCenter.style.transform = 'scale(0.7)';
         oldCenter.style.opacity = '0.6';
         oldCenter.style.zIndex = '1';
     }
@@ -341,4 +341,5 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextSlide();
     if (e.key === 'ArrowLeft') prevSlide();
 });
+
 
