@@ -1375,31 +1375,31 @@ margin: 5px 5px;
 }
 
 /* Стилі для кнопок */
-.arrow-prev, .arrow-next {
-    height: calc(100% - (var(--slide-top-height) + var(--slide-bottom-height) + 4%));
+.arrow-prev,
+.arrow-next {
+    height: 100%;
     cursor: pointer;
     position: absolute;
     z-index: 15;
-    bottom: 0px;
+    bottom: 0;
     display: flex;
     opacity: 0.5;
     align-items: center;
-    color: #403332;
+  fill: #2c82ff;
     font-size: 20px;
     font-weight: 700;
-    top: calc(var(--slide-top-height));
 }
 
 .arrow-prev {
     left: 6px;
     justify-content: flex-start;
-    width: 50%;
+    width: 2%;
 }
 
 .arrow-next {
     right: 6px;
     justify-content: flex-end;
-    width: 50%;
+    width: 2%;
 }
 
 .svg__link {
@@ -1631,6 +1631,7 @@ margin: 5px 5px;
     
     }
 }
+
 
 
 
