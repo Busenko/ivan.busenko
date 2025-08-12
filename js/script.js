@@ -96,7 +96,7 @@ itemsControl();
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // слайдер................................................................................................................
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const VISIBLE_SLIDES = 7;
+const VISIBLE_SLIDES = 10;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 50;
 const IS_TOUCH_DEVICE = 'ontouchstart' in window;
@@ -341,3 +341,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextSlide();
     if (e.key === 'ArrowLeft') prevSlide();
 });
+
