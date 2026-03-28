@@ -1377,6 +1377,37 @@ color:#008516;
     padding: 20px 30px;
 
 }
+
+
+   .popup {
+        position: relative;
+
+        padding: 20px; 
+        background-color: #ffffff;
+        border: 4px solid #00b3ff;
+        border-radius: 20px;
+        
+        backdrop-filter: blur(8px);  
+        -webkit-backdrop-filter: blur(8px); 
+        box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.1);
+    
+        max-width: 98%;
+        max-height: 90%;
+        height: auto;
+    
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+
+
+
+
+
+
 }
 
 @media (max-width: 640px) {
