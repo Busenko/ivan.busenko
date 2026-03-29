@@ -9,46 +9,54 @@ let currentIndex = 0;
 let slides = [];
 let touchStartX = 0;
 let touchEndX = 0;
+let touchStartY = 0;
 let isDragging = false;
 let dragStartX = 0;
 let dragOffset = 0;
 let allowInteraction = true;
-let touchStartY = 0;
 let isHorizontalSwipe = null;
 let lastInputType = null;
+let rafId = null; // Для requestAnimationFrame
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
 const arrowNext = document.querySelector('.arrow-next');
 const arrowPrev = document.querySelector('.arrow-prev');
 
-// --- Встановлення висот для активного слайду ---
+// --- Оптимізоване встановлення висот (запобігає Layout Thrashing) ---
 const setHeights = (targetSlide = null) => {
-    const target = targetSlide || document.querySelector('.slide:not(.inactive)');
-    if (!target) return;
+    // Читаємо DOM (offsetHeight) в одному кадрі...
+    requestAnimationFrame(() => {
+        const target = targetSlide || slideBlock.children[CENTER_INDEX];
+        if (!target) return;
 
-    const slideTop = target.querySelector('.slide__top');
-    const slideBottom = target.querySelector('.slide__bottom');
-    const slideHeight = target.querySelector('.img__height')?.offsetHeight || 0;
+        const slideTop = target.querySelector('.slide__top');
+        const slideBottom = target.querySelector('.slide__bottom');
+        const imgHeightEl = target.querySelector('.img__height');
 
-    document.documentElement.style.setProperty('--slide-height', `${slideHeight}px`);
-    document.documentElement.style.setProperty('--slide-top-height', `${slideTop?.offsetHeight || 0}px`);
-    document.documentElement.style.setProperty('--slide-bottom-height', `${slideBottom?.offsetHeight || 0}px`);
+        const slideHeight = imgHeightEl ? imgHeightEl.offsetHeight : 0;
+        const topHeight = slideTop ? slideTop.offsetHeight : 0;
+        const bottomHeight = slideBottom ? slideBottom.offsetHeight : 0;
+
+        // ...а записуємо (setProperty) в наступному. Це розриває цикл зависань.
+        requestAnimationFrame(() => {
+            document.documentElement.style.setProperty('--slide-height', `${slideHeight}px`);
+            document.documentElement.style.setProperty('--slide-top-height', `${topHeight}px`);
+            document.documentElement.style.setProperty('--slide-bottom-height', `${bottomHeight}px`);
+        });
+    });
 };
 
-// --- Застосування ширини слайдів ---
 const applySlideSizes = () => {
     slideWidth = slider.clientWidth;
-    if (slideWidth <= 0) return;
-    slides.forEach(slide => slide.style.width = `${slideWidth}px`);
 };
 
 const getIndex = (i, total) => (i + total) % total;
 
-// --- Відмальовування видимих слайдів ---
+// --- Відмальовування через DocumentFragment (1 зміна DOM замість 5) ---
 const renderSlides = () => {
-    slideBlock.innerHTML = '';
     const total = slides.length;
+    const fragment = document.createDocumentFragment();
 
     for (let i = 0; i < VISIBLE_SLIDES; i++) {
         const index = getIndex(currentIndex + i - CENTER_INDEX, total);
@@ -56,25 +64,26 @@ const renderSlides = () => {
 
         clone.classList.add('slide');
         clone.style.width = `${slideWidth}px`;
-        clone.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
 
         if (i === CENTER_INDEX) {
+            clone.classList.add('active');
             clone.classList.remove('inactive');
-            clone.style.transform = 'scale(1)';
-            clone.style.opacity = '1';
-            clone.style.zIndex = '2';
         } else {
             clone.classList.add('inactive');
-            clone.style.transform = 'scale(0.95)';
-            clone.style.opacity = '0.6';
-            clone.style.zIndex = '1';
+            clone.classList.remove('active');
         }
-        slideBlock.appendChild(clone);
+        
+        fragment.appendChild(clone);
     }
 
+    slideBlock.innerHTML = '';
+    slideBlock.appendChild(fragment);
+
     slideBlock.style.transition = 'none';
-    slideBlock.style.transform = `translateX(-${CENTER_INDEX * slideWidth}px)`;
-    setHeights(slideBlock.children[CENTER_INDEX]);
+    // Використовуємо translate3d для включення GPU-прискорення
+    slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
+    
+    setHeights();
 };
 
 // --- Зміна слайда ---
@@ -91,33 +100,46 @@ const handleSlideChange = (direction) => {
     const shift = direction === 'next' ? CENTER_INDEX + 1 : CENTER_INDEX - 1;
 
     const oldCenter = slideBlock.children[CENTER_INDEX];
-    if (oldCenter) {
-        oldCenter.style.transform = 'scale(0.95)';
-        oldCenter.style.opacity = '0.6';
-        oldCenter.style.zIndex = '1';
-    }
-
     const futureCenter = slideBlock.children[shift];
+
+    // Зміна класів (анімація тепер керується CSS)
+    if (oldCenter) {
+        oldCenter.classList.remove('active');
+        oldCenter.classList.add('inactive');
+    }
     if (futureCenter) {
         futureCenter.classList.remove('inactive');
-        futureCenter.style.transform = 'scale(1)';
-        futureCenter.style.opacity = '1';
-        futureCenter.style.zIndex = '2';
+        futureCenter.classList.add('active');
     }
 
-    slideBlock.style.transition = 'transform 0.6s ease';
-    slideBlock.style.transform = `translateX(-${shift * slideWidth}px)`;
+    slideBlock.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    slideBlock.style.transform = `translate3d(-${shift * slideWidth}px, 0, 0)`;
 
-    slideBlock.addEventListener('transitionend', () => {
+    // Використовуємо обробник, який видаляє сам себе
+    const onTransitionEnd = (e) => {
+        if (e.target !== slideBlock) return; // Ігноруємо події від внутрішніх елементів
+        slideBlock.removeEventListener('transitionend', onTransitionEnd);
+        
         currentIndex = newIndex;
         renderSlides();
         isAnimating = false;
         allowInteraction = true;
-    }, { once: true });
+    };
+
+    slideBlock.addEventListener('transitionend', onTransitionEnd);
 };
 
 const nextSlide = () => handleSlideChange('next');
 const prevSlide = () => handleSlideChange('prev');
+
+// --- Оновлення позиції під час свайпу (rAF) ---
+const performDragAnimation = () => {
+    if (isDragging || lastInputType === 'touch') {
+        slideBlock.style.transition = 'none';
+        slideBlock.style.transform = `translate3d(${-CENTER_INDEX * slideWidth + dragOffset}px, 0, 0)`;
+    }
+    rafId = null;
+};
 
 // --- Touch-події ---
 const handleTouchStart = (e) => {
@@ -127,6 +149,7 @@ const handleTouchStart = (e) => {
     touchStartY = e.touches[0].clientY;
     touchEndX = touchStartX;
     isHorizontalSwipe = null;
+    dragOffset = 0;
 };
 
 const handleTouchMove = (e) => {
@@ -145,10 +168,12 @@ const handleTouchMove = (e) => {
     touchEndX = e.touches[0].clientX;
 
     const diff = touchStartX - touchEndX;
-    const offset = Math.max(-slideWidth * 0.3, Math.min(slideWidth * 0.3, diff));
+    dragOffset = Math.max(-slideWidth * 0.3, Math.min(slideWidth * 0.3, -diff));
 
-    slideBlock.style.transition = 'none';
-    slideBlock.style.transform = `translateX(${-CENTER_INDEX * slideWidth - offset}px)`;
+    // Пропускаємо кадри через rAF для ідеальної плавності
+    if (!rafId) {
+        rafId = requestAnimationFrame(performDragAnimation);
+    }
 };
 
 const handleTouchEnd = () => {
@@ -159,12 +184,15 @@ const handleTouchEnd = () => {
         if (Math.abs(diff) > SWIPE_THRESHOLD) {
             diff > 0 ? nextSlide() : prevSlide();
         } else {
-            slideBlock.style.transition = 'transform 0.3s ease';
-            slideBlock.style.transform = `translateX(-${CENTER_INDEX * slideWidth}px)`;
+            slideBlock.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+            slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
         }
     }
 
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
     touchStartX = touchEndX = 0;
+    dragOffset = 0;
     isHorizontalSwipe = null;
 };
 
@@ -174,6 +202,7 @@ const handleMouseDown = (e) => {
     lastInputType = 'mouse';
     isDragging = true;
     dragStartX = e.clientX;
+    dragOffset = 0;
     slideBlock.style.transition = 'none';
     e.preventDefault();
 };
@@ -184,7 +213,9 @@ const handleMouseMove = (e) => {
     dragOffset = e.clientX - dragStartX;
     dragOffset = Math.max(-slideWidth * 0.3, Math.min(slideWidth * 0.3, dragOffset));
 
-    slideBlock.style.transform = `translateX(${-CENTER_INDEX * slideWidth + dragOffset}px)`;
+    if (!rafId) {
+        rafId = requestAnimationFrame(performDragAnimation);
+    }
 };
 
 const handleMouseUp = () => {
@@ -194,20 +225,25 @@ const handleMouseUp = () => {
     if (Math.abs(dragOffset) > SWIPE_THRESHOLD) {
         dragOffset > 0 ? prevSlide() : nextSlide();
     } else {
-        slideBlock.style.transition = 'transform 0.3s ease';
-        slideBlock.style.transform = `translateX(-${CENTER_INDEX * slideWidth}px)`;
+        slideBlock.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+        slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
     }
+    
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
     dragOffset = 0;
 };
 
 // --- Ініціалізація ---
 const initSlider = () => {
+    // Зберігаємо оригінальні вузли
     slides = Array.from(document.querySelectorAll('.slide'));
+    
     applySlideSizes();
     renderSlides();
+    
     slideBlock.style.opacity = '1';
     slideBlock.style.transition = 'opacity 0.5s ease';
-    setHeights();
 
     if (IS_TOUCH_DEVICE) {
         slider.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -224,18 +260,23 @@ const initSlider = () => {
     slider.addEventListener('contextmenu', (e) => e.preventDefault());
 };
 
-arrowNext.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
-arrowPrev.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
+if (arrowNext) arrowNext.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
+if (arrowPrev) arrowPrev.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
 
-// --- Ресайз тільки по ширині ---
+// --- Дебаунс для ресайзу (щоб не вішати браузер при зміні орієнтації) ---
 let lastWindowWidth = window.innerWidth;
+let resizeTimeout;
+
 window.addEventListener('resize', () => {
-    const newWidth = window.innerWidth;
-    if (newWidth !== lastWindowWidth) {
-        lastWindowWidth = newWidth;
-        applySlideSizes();
-        renderSlides();
-    }
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        const newWidth = window.innerWidth;
+        if (newWidth !== lastWindowWidth) {
+            lastWindowWidth = newWidth;
+            applySlideSizes();
+            renderSlides();
+        }
+    }, 150); // Чекаємо 150мс після закінчення ресайзу
 });
 
 document.addEventListener('DOMContentLoaded', initSlider);
@@ -243,6 +284,3 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextSlide();
     if (e.key === 'ArrowLeft') prevSlide();
 });
-
-
-
