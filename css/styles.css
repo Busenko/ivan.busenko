@@ -97,13 +97,13 @@ h6 {
 
 @font-face {
   font-family: 'Inter';
-  src: url('../../asset/fonts/Inter-VariableFont_opsz\,wght.ttf') format('truetype-variations');
+  src: url('../asset/fonts/Inter-VariableFont_opsz\,wght.ttf') format('truetype-variations');
   font-weight: 100 900; 
   font-display: swap; 
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('../../asset/fonts/Montserrat-Variable.ttf') format('truetype');
+  src: url('../asset/fonts/Montserrat-Variable.ttf') format('truetype');
   font-weight: 100 900;
   /* Краще всюди використовувати swap, це пришвидшить появу тексту на слабкому інтернеті */
   font-display: swap;
@@ -111,7 +111,7 @@ h6 {
 
 @font-face {
   font-family: 'Bungee';
-  src: url('../../asset/fonts/Bungee-Regular.ttf') format('truetype');
+  src: url('../asset/fonts/Bungee-Regular.ttf') format('truetype');
   font-weight: 400; /* Це звичайний шрифт, а не варіативний */
   font-display: swap;
 }
@@ -119,14 +119,14 @@ h6 {
 @font-face {
   font-family: 'Indie Flower';
   /* Прибери пробіл у назві файлу на комп'ютері, якщо він там є */
-  src: url('../../asset/fonts/IndieFlower-Regular.ttf') format('truetype');
+  src: url('../asset/fonts/IndieFlower-Regular.ttf') format('truetype');
   font-weight: 400; /* Це звичайний шрифт */
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Playpen Sans';
-  src: url('../../asset/fonts/PlaypenSans-Variable.ttf') format('truetype');
+  src: url('../asset/fonts/PlaypenSans-Variable.ttf') format('truetype');
   font-weight: 100 900;
   font-display: swap;
 }
