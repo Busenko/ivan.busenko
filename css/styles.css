@@ -388,15 +388,6 @@ footer{
 }
 @media (max-width: 810px) {
 
-body{
-     text-align: justify;
-     text-justify: inter-word;
-
-     /* -webkit-hyphens: auto;
-    -moz-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto; */
-}
 
 
 .block{
@@ -644,7 +635,7 @@ h6{font-size: 1.6rem; font-weight: 700;}
 
 
 /* ...................................Paragraph */
-p{font-size: 1.6rem; font-weight: 600;}
+p{font-size: 1.6rem; font-weight: 400;}
 
 
 
