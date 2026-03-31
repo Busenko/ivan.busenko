@@ -170,7 +170,7 @@ function itemsControl() {
                     content.style.maxHeight = content.scrollHeight + 'px';
                 }
             });
-        }, 500);
+        }, 1000);
     });
 }
 
