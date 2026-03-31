@@ -801,7 +801,8 @@ ul {
     overflow: hidden;
     width: 100%;
     
-    transition: max-height 0.3s ease-in-out;
+       transition: max-height 0.3s ease-in-out;
+    will-change: max-height;
 }
 .info_wrapper{
     width: 100%;
