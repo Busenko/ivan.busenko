@@ -800,14 +800,15 @@ ul {
     max-height: 0;
     overflow: hidden;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
+    
     transition: max-height 0.3s ease-in-out;
 }
 .info_wrapper{
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
     height: auto;
     padding: 0.5rem 2rem;
 
