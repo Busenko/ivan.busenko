@@ -24,7 +24,9 @@ class LottieController {
             };
 
             this.initObserver();
-            // this.initInteractions();
+
+            this.initInteractions();
+
             this.checkVisibilityOnLoad();
         });
     }
@@ -69,6 +71,19 @@ class LottieController {
             this.animation.goToAndPlay(0, true);
         }
     }
+
+    initInteractions() {
+       
+        this.container.addEventListener('click', () => {
+          
+            if (this.isCurrentlyPlaying) return;
+
+            if (this.animation) {
+                this.isCurrentlyPlaying = true;
+                this.animation.goToAndPlay(0, true);
+            }
+        });
+    }
 }
 
 
@@ -82,7 +97,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         const targetId = this.getAttribute('href');
 
-        // Захист від критичної помилки: ігноруємо пусті посилання (заглушки)
+      
         if (targetId === '#') return;
 
         const targetElement = document.querySelector(targetId);
@@ -90,15 +105,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         if (targetElement) {
             e.preventDefault();
 
-            // Читаємо висоту хедера (працює як і в тебе)
             const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 50;
-            
-            // Надійний прорахунок позиції відносно початку ВСЬОГО документа
+          
             const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
 
             window.scrollTo({
                 top: targetPosition - headerHeight,
-                behavior: 'smooth' // Віддаємо роботу нативному движку браузера
+                behavior: 'smooth'
             });
         }
     });
@@ -109,7 +122,6 @@ function itemsControl() {
     const coll = document.querySelectorAll('.item');
     if (coll.length === 0) return;
 
-    // 1. Повертаємо твою надійну логіку кліків (трохи коротше через forEach)
     coll.forEach(item => {
         const title = item.querySelector('.item-btn');
         const content = item.querySelector('.item-info');
@@ -117,30 +129,43 @@ function itemsControl() {
 
         if (title && content) {
             title.addEventListener('click', function () {
-                if (content.style.maxHeight) {
-                    content.style.maxHeight = null;
-                    if (image) image.classList.remove('rotated');
-                } else {
+                const isOpen = content.style.maxHeight;
+
+  
+                coll.forEach(otherItem => {
+                    const otherContent = otherItem.querySelector('.item-info');
+                    const otherImage = otherItem.querySelector('.img-rotate');
+                    
+                    if (otherContent) {
+                        otherContent.style.maxHeight = null;
+                    }
+                    if (otherImage) {
+                        otherImage.classList.remove('rotated');
+                    }
+                });
+
+                
+                if (!isOpen) {
                     content.style.maxHeight = content.scrollHeight + 'px';
                     if (image) image.classList.add('rotated');
+                    if (item.querySelector('#thanosdog')) {
+                        
+                        skillsAnim.forcePlay();
+                    }
                 }
             });
         }
     });
 
-    // 2. Оптимізуємо ТІЛЬКИ ресайз (тепер він не спамить 60 разів на секунду)
+
     let resizeTimeout;
     window.addEventListener('resize', function () {
-        // Скасовуємо попередній виклик, якщо користувач все ще крутить екран
         clearTimeout(resizeTimeout);
         
-        // Запускаємо перерахунок висоти лише через 150мс після зупинки ресайзу
         resizeTimeout = setTimeout(() => {
             coll.forEach(item => {
                 const content = item.querySelector('.item-info');
-                // Оновлюємо висоту тільки для відкритих елементів
                 if (content && content.style.maxHeight) {
-                    // Спочатку скидаємо висоту, щоб отримати актуальний scrollHeight
                     content.style.maxHeight = 'none'; 
                     content.style.maxHeight = content.scrollHeight + 'px';
                 }
@@ -149,7 +174,6 @@ function itemsControl() {
     });
 }
 
-// Запускаємо миттєво, як у твоєму оригіналі
 itemsControl();
 
 //ПОПАП ...................................................................................................................
@@ -162,17 +186,16 @@ const popupTitle = popupOverlay.querySelector(".popup__title");
 const popupWraper = popupOverlay.querySelector(".popup__wraper");
 
 let lastClickedButton = null;
-let isAnimating = false; // Захист від багів при швидкому спамі кліками
+let isAnimating = false; 
 
 openPopupBtns.forEach(button => {
     button.addEventListener("click", function () {
-        if (isAnimating) return; // Ігноруємо кліки, поки йде анімація
+        if (isAnimating) return; 
         lastClickedButton = button;
 
         const targetId = button.getAttribute("data-target");
         const sourceContent = document.getElementById(targetId);
 
-        // --- 1. ПІДГОТОВКА (Читаємо координати кнопки та контент) ---
         const buttonRect = button.getBoundingClientRect();
         let newTitle = "";
         let newBody = "";
@@ -184,45 +207,38 @@ openPopupBtns.forEach(button => {
             if (bodyEl) newBody = bodyEl.innerHTML;
         }
 
-        // --- 2. ФАЗА ІНІЦІАЛІЗАЦІЇ (Змінюємо DOM та готуємо попап) ---
         requestAnimationFrame(() => {
             if (newTitle) popupTitle.innerHTML = newTitle;
             if (newBody) popupWraper.innerHTML = newBody;
 
-            // Відключаємо транзишн, ставимо scale(0) і show
             popupOverlay.style.transition = "none";
             popupOverlay.style.transform = `scale(0)`;
             popupOverlay.classList.add("show");
 
-            // --- 3. ФАЗА РОЗРАХУНКУ ТА СТАРТУ (в наступному кадрі) ---
             requestAnimationFrame(() => {
                 const winWidth = window.innerWidth;
                 const winHeight = window.innerHeight;
                 const popupWidth = popupOverlay.offsetWidth;
                 const popupHeight = popupOverlay.offsetHeight;
 
-                // Вираховуємо фінальну позицію (центр екрану)
                 const endX = winWidth / 2 - popupWidth / 2;
                 const endY = winHeight / 2 - popupHeight / 2;
 
-                // Ставимо попап над кнопкою у розмірі scale(0), використовуючи translate3d для GPU
                 const startX = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
                 const startY = buttonRect.top + buttonRect.height / 2 - popupHeight / 2;
                 popupOverlay.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
 
-                // Даємо браузеру один кадр на застосування стилів...
                 requestAnimationFrame(() => {
                     isAnimating = true;
 
-                    // --- 4. ФАЗА ПОЛЬОТУ (точно як у твоєму оригіналі) ---
-                    // Повертаємо твій transition: 0.3s ease-out
+          
                     popupOverlay.style.transition = "transform 0.3s ease-out";
-                    // І летимо в центр, ростучи до scale(1)
+                  
                     popupOverlay.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(1)`;
 
                     body.classList.add('stop-scrolling');
 
-                    // Знімаємо блок після завершення анімації
+                    
                     popupOverlay.addEventListener('transitionend', function handler(e) {
                         if (e.target !== popupOverlay) return;
                         isAnimating = false;
@@ -234,7 +250,6 @@ openPopupBtns.forEach(button => {
     });
 });
 
-// Обробник закриття: делегуємо події на overlay та хрестик
 popupOverlay.addEventListener("click", function (event) {
     if (event.target === popupOverlay || event.target.closest('.closePopup')) {
         closePopup();
@@ -245,7 +260,7 @@ function closePopup() {
     if (!lastClickedButton || isAnimating) return;
     isAnimating = true;
 
-    // --- 1. ФАЗА ЧИТАННЯ ---
+
     const buttonRect = lastClickedButton.getBoundingClientRect();
     const popupWidth = popupOverlay.offsetWidth;
     const popupHeight = popupOverlay.offsetHeight;
@@ -253,20 +268,20 @@ function closePopup() {
     const endX = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
     const endY = buttonRect.top + buttonRect.height / 2 - popupHeight / 2;
 
-    // --- 2. ФАЗА ЗАПИСУ ---
+
     requestAnimationFrame(() => {
-        // Анімація закриття теж використовує ease-out
+
         popupOverlay.style.transition = "transform 0.3s ease-out";
         popupOverlay.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
 
-        // Очищення після приземлення попапу
+
         popupOverlay.addEventListener('transitionend', function handler(e) {
             if (e.target !== popupOverlay) return;
             
             popupOverlay.classList.remove("show");
             body.classList.remove('stop-scrolling');
             
-            // Скидаємо стилі, щоб не конфліктували при наступному відкритті
+        
             popupOverlay.style.transition = "none";
             
             lastClickedButton = null;
@@ -276,14 +291,100 @@ function closePopup() {
     });
 }
 
+// ..............................................................................................Сервіси
+function autoSelectService() {
+    const orderLinks = document.querySelectorAll('.link-btn[href="#form-point"]');
+    const serviceGroup = document.querySelector('#serviceGroup');
 
+    orderLinks.forEach(link => {
+        link.addEventListener('click', function () {
+            const serviceName = this.getAttribute('data-service');
+            
+            if (serviceName) {
+                const radioToSelect = document.querySelector(`#service-${serviceName}`);
+                
+                if (radioToSelect) {
+                    radioToSelect.checked = true;
+                    
+                  
+                    if (serviceGroup) {
+                        serviceGroup.classList.remove('error');
+                    }
+                }
+            }
+        });
+    });
+}
 
+autoSelectService();
+// ..............................................................................................Форма
+function formControl() {
+    const form = document.querySelector('.form-order');
+    if (!form) return;
+
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    const name = form.querySelector('#name');
+    const company = form.querySelector('#company');
+    const email = form.querySelector('#email');
+    const project = form.querySelector('#project');
+
+    const validateField = (field) => {
+        let hasError = false;
+
+        if (field.id === 'name' && field.value.trim().length < 2) hasError = true;
+        if (field.id === 'company' && field.value.trim() === '') hasError = true;
+        if (field.id === 'email' && !emailPattern.test(field.value.trim())) hasError = true;
+        if (field.id === 'project' && field.value.trim().length < 10) hasError = true;
+
+        if (hasError) {
+            field.classList.add('error');
+            return false;
+        } else {
+            field.classList.remove('error');
+            return true;
+        }
+    };
+
+    form.addEventListener('submit', function (e) {
+        let isValid = true;
+
+        if (!validateField(name)) isValid = false;
+        if (!validateField(company)) isValid = false;
+        if (!validateField(email)) isValid = false;
+        if (!validateField(project)) isValid = false;
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        
+        input.addEventListener('input', function () {
+            this.classList.remove('error');
+        });
+
+        input.addEventListener('blur', function () {
+
+            if (this.value.trim() === '') {
+                this.classList.remove('error'); 
+                return; 
+            }
+
+            validateField(this);
+        });
+    });
+}
+
+formControl();
 // /////////////////////////////////////////////////////////////////////////
 
-     const headerAnim = new LottieController('#webdog', 'asset/lottie/webdogs.json');
+     const headerAnim = new LottieController('#webdog', '../asset/lottie/webdogs.json');
 
-    const experienceAnim = new LottieController('#jobdog', 'asset/lottie/exp.json');
-    const skillsAnim = new LottieController('#thanosdog', 'asset/lottie/skill.json');
+    const experienceAnim = new LottieController('#jobdog', '../asset/lottie/exp.json');
+    const skillsAnim = new LottieController('#thanosdog', '../asset/lottie/skill.json');
 
 
 
