@@ -644,7 +644,7 @@ h6{font-size: 1.6rem; font-weight: 700;}
 
 
 /* ...................................Paragraph */
-p{font-size: 1.4rem; font-weight: 600;}
+p{font-size: 1.6rem; font-weight: 600;}
 
 
 
@@ -654,7 +654,7 @@ p{font-size: 1.4rem; font-weight: 600;}
 /* ...................................Link */
 a {    
 
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 600;
 }
 
@@ -677,7 +677,7 @@ button{
 
 /* ...................................List */
 ul {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
 }
 }
 
