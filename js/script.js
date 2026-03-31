@@ -129,27 +129,29 @@ function itemsControl() {
 
         if (title && content) {
             title.addEventListener('click', function () {
-                const isOpen = content.style.maxHeight;
+                // Перевіряємо, чи блок зараз відкритий (maxHeight більше 0)
+                const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
 
-  
+                // Закриваємо всі інші блоки
                 coll.forEach(otherItem => {
                     const otherContent = otherItem.querySelector('.item-info');
                     const otherImage = otherItem.querySelector('.img-rotate');
                     
                     if (otherContent) {
-                        otherContent.style.maxHeight = null;
+                        otherContent.style.maxHeight = '0px';
                     }
                     if (otherImage) {
                         otherImage.classList.remove('rotated');
                     }
                 });
 
-                
+                // Відкриваємо поточний, якщо він був закритий
                 if (!isOpen) {
                     content.style.maxHeight = content.scrollHeight + 'px';
                     if (image) image.classList.add('rotated');
-                    if (item.querySelector('#thanosdog')) {
-                        
+                    
+                    // Перевірка наявності анімації (додав typeof для безпеки)
+                    if (item.querySelector('#thanosdog') && typeof skillsAnim !== 'undefined') {
                         skillsAnim.forcePlay();
                     }
                 }
@@ -157,7 +159,7 @@ function itemsControl() {
         }
     });
 
-
+    // Оптимізований обробник зміни розміру екрана
     let resizeTimeout;
     window.addEventListener('resize', function () {
         clearTimeout(resizeTimeout);
@@ -165,16 +167,18 @@ function itemsControl() {
         resizeTimeout = setTimeout(() => {
             coll.forEach(item => {
                 const content = item.querySelector('.item-info');
-                if (content && content.style.maxHeight) {
-                    content.style.maxHeight = 'none'; 
+                // Перераховуємо висоту тільки для відкритих блоків
+                if (content && content.style.maxHeight && content.style.maxHeight !== '0px') {
+                    // content.scrollHeight автоматично врахує новий розмір тексту
                     content.style.maxHeight = content.scrollHeight + 'px';
                 }
             });
-        }, 1000);
+        }, 250); // Зменшив затримку з 1000мс до 250мс для кращої чуйності UI
     });
 }
 
 itemsControl();
+
 
 //ПОПАП ...................................................................................................................
 const body = document.body;
