@@ -1223,8 +1223,8 @@ input:-webkit-autofill:active {
 
 .slider {
     width: 100%;
-    height: auto;
-   
+    
+   contain: layout;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y; 
     user-select: none; 
