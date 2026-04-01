@@ -3,15 +3,12 @@ const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 30; 
 
 // --- НАЛАШТУВАННЯ ПЛАВНОСТІ ---
-const ACTIVE_SCALE = 0.95;     // Розмір головного слайду (90%)
-const INACTIVE_SCALE = 0.8;   // Розмір бокових слайдів (70%)
-const ACTIVE_OPACITY = 1;     // Прозорість головного слайду (100%)
-const INACTIVE_OPACITY = 0.5; // Прозорість бокових слайдів (50%)
-const ANIMATION_SPEED = 0.15; // Швидкість дотягування
-
-
-const COMPACT_SPACING = 30;
-
+const ACTIVE_SCALE = 0.95;     
+const INACTIVE_SCALE = 0.8;   
+const ACTIVE_OPACITY = 1;     
+const INACTIVE_OPACITY = 0.5; 
+const ANIMATION_SPEED = 0.15; 
+const COMPACT_SPACING = 30;   
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
@@ -22,7 +19,6 @@ let slideWidth = 0;
 let currentIndex = 0;
 let originalSlides = [];
 
-// Змінні рушія анімації
 let isDragging = false;
 let touchStartX = 0;
 let touchStartY = 0;
@@ -53,37 +49,33 @@ const lockSliderHeight = () => {
 const updateVisuals = () => {
     slideBlock.style.transform = `translate3d(${-CENTER_INDEX * slideWidth + currentDrag}px, 0, 0)`;
 
-    Array.from(slideBlock.children).forEach((slide, i) => {
-        // Рахуємо дистанцію в пікселях від ідеального центру
-        const distance = (i - CENTER_INDEX) * slideWidth + currentDrag;
+    const children = slideBlock.children;
+    for (let i = 0; i < children.length; i++) {
+        const slide = children[i];
         
-        // relativePosition: 0 (центр), 1 (перший справа), -1 (перший зліва) і т.д.
+        const distance = (i - CENTER_INDEX) * slideWidth + currentDrag;
         const relativePosition = distance / slideWidth;
         const ratio = Math.min(1, Math.abs(relativePosition)); 
 
-        // Рахуємо розмір і прозорість
         const scale = ACTIVE_SCALE - (ACTIVE_SCALE - INACTIVE_SCALE) * ratio;
         const opacity = ACTIVE_OPACITY - (ACTIVE_OPACITY - INACTIVE_OPACITY) * ratio;
-
-        // --- МАГІЯ СТЯГУВАННЯ ---
-        // Чим далі слайд, тим сильніше він тягнеться до центру (множимо на COMPACT_SPACING)
         const translateX = relativePosition * -COMPACT_SPACING;
 
-        // Застосовуємо одночасно зсув (translateX) та розмір (scale)
         slide.style.transform = `translateX(${translateX}px) scale(${scale})`;
         slide.style.opacity = opacity;
 
-        if (ratio < 0.5) {
+        const isNowActive = ratio < 0.5;
+        const wasActive = slide.classList.contains('active');
+        
+        if (isNowActive && !wasActive) {
             slide.classList.add('active');
             slide.classList.remove('inactive');
-        } else {
+        } else if (!isNowActive && wasActive) {
             slide.classList.add('inactive');
             slide.classList.remove('active');
         }
-    });
+    }
 };
-
-
 
 const shiftDOM = (direction) => {
     const total = originalSlides.length;
@@ -94,7 +86,6 @@ const shiftDOM = (direction) => {
         newSlide.className = 'slide inactive';
         newSlide.style.width = `${slideWidth}px`;
         newSlide.style.height = '100%';
-        newSlide.style.transition = 'none'; 
         slideBlock.appendChild(newSlide);
     } else {
         currentIndex = getIndex(currentIndex - 1, total);
@@ -103,7 +94,6 @@ const shiftDOM = (direction) => {
         newSlide.className = 'slide inactive';
         newSlide.style.width = `${slideWidth}px`;
         newSlide.style.height = '100%';
-        newSlide.style.transition = 'none'; 
         slideBlock.insertBefore(newSlide, slideBlock.firstElementChild);
     }
 };
@@ -113,13 +103,13 @@ const checkWrap = () => {
         shiftDOM('next');
         currentDrag += slideWidth;
         targetDrag += slideWidth;
-        startDragOffset += slideWidth; // ФІКС 1: Синхронізація стартової точки при довгому свайпі
+        startDragOffset += slideWidth;
     }
     while (currentDrag >= slideWidth && slideWidth > 0) {
         shiftDOM('prev');
         currentDrag -= slideWidth;
         targetDrag -= slideWidth;
-        startDragOffset -= slideWidth; // ФІКС 1
+        startDragOffset -= slideWidth;
     }
 };
 
@@ -133,9 +123,9 @@ const animateLoop = () => {
     checkWrap();
     updateVisuals();
 
-    // Зупиняємо анімацію лише коли слайд ІДЕАЛЬНО став на місце
-    if (!isDragging && Math.abs(targetDrag - currentDrag) < 0.5) {
-        currentDrag = targetDrag;
+    // ЗАПОБІЖНИК 1: Збільшили поріг зупинки до 1px для стабільності
+    if (!isDragging && Math.abs(targetDrag - currentDrag) < 1) {
+        currentDrag = targetDrag; 
         checkWrap(); 
         updateVisuals();
         animationFrame = null;
@@ -155,9 +145,7 @@ const applySlideSizes = () => {
     Array.from(slideBlock.children).forEach(slide => {
         slide.style.width = `${slideWidth}px`;
         slide.style.height = '100%';
-        slide.style.transition = 'none'; 
     });
-    slideBlock.style.transition = 'none';
     updateVisuals();
 };
 
@@ -173,14 +161,12 @@ const initSlider = () => {
         const logicalIndex = getIndex(currentIndex + i - CENTER_INDEX, originalSlides.length);
         const clone = originalSlides[logicalIndex].cloneNode(true);
         clone.className = i === CENTER_INDEX ? 'slide active' : 'slide inactive';
-        clone.style.transition = 'none'; 
         fragment.appendChild(clone);
     }
     slideBlock.appendChild(fragment);
 
     applySlideSizes();
     lockSliderHeight(); 
-    slideBlock.style.opacity = '1';
 
     const setContext = (e) => (e.type.includes('mouse') ? e : e.touches[0]);
 
@@ -205,7 +191,6 @@ const initSlider = () => {
         }
 
         if (e.type.includes('touch') && !isHorizontalSwipe) {
-            // ФІКС 2: Якщо це вертикальний скрол, примусово повертаємо слайд рівно на місце
             targetDrag = 0;
             isDragging = false; 
             return;
@@ -219,7 +204,6 @@ const initSlider = () => {
         if (!isDragging) return;
         isDragging = false;
 
-        // Магнітимо до найближчого слайда
         if (currentDrag < -SWIPE_THRESHOLD) {
             targetDrag = -slideWidth;
         } else if (currentDrag > SWIPE_THRESHOLD) {
@@ -232,7 +216,10 @@ const initSlider = () => {
     slider.addEventListener('mousedown', onStart);
     window.addEventListener('mousemove', onMove, { passive: false });
     window.addEventListener('mouseup', onEnd);
-    window.addEventListener('mouseleave', onEnd); // ФІКС 3: Страховка, якщо миша вийшла за межі вікна
+    
+    // ЗАПОБІЖНИК 2: Відпускаємо слайдер, якщо курсор вийшов за вікно або згорнули браузер
+    window.addEventListener('mouseleave', onEnd);
+    window.addEventListener('blur', onEnd); 
 
     slider.addEventListener('touchstart', onStart, { passive: false });
     slider.addEventListener('touchmove', onMove, { passive: false });
