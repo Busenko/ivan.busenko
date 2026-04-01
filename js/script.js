@@ -234,21 +234,22 @@ openPopupBtns.forEach(button => {
         popupOverlay.classList.add("show");
         body.classList.add('stop-scrolling');
 
-        // 3. ТВІЙ ОРИГІНАЛЬНИЙ ХАК (Примусовий перерахунок макета)
-        // Це змушує браузер "побачити", що картка зараз маленька, ПЕРЕД тим як її збільшувати
-        void popupCard.offsetWidth;
+        // 3. БРОНЬОВАНИЙ ХАК (setTimeout)
+        // Даємо браузеру 10 мілісекунд, щоб він відрендерив стартову позицію в кнопці
+        setTimeout(() => {
+            isAnimating = true;
+            
+            // 4. Тепер вмикаємо анімацію і вистрілюємо картку
+            popupCard.style.transition = "transform 0.3s ease-out";
+            popupCard.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
 
-        // 4. Тепер вмикаємо анімацію і вистрілюємо картку
-        isAnimating = true;
-        popupCard.style.transition = "transform 0.3s ease-out";
-        popupCard.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
-
-        const onEnd = (e) => {
-            if (e.target !== popupCard) return;
-            isAnimating = false;
-            popupCard.removeEventListener('transitionend', onEnd);
-        };
-        popupCard.addEventListener('transitionend', onEnd);
+            const onEnd = (e) => {
+                if (e.target !== popupCard) return;
+                isAnimating = false;
+                popupCard.removeEventListener('transitionend', onEnd);
+            };
+            popupCard.addEventListener('transitionend', onEnd);
+        }, 10);
     });
 });
 
@@ -283,6 +284,7 @@ function closePopup() {
     };
     popupCard.addEventListener('transitionend', onEnd);
 }
+
 
 // ..............................................................................................Сервіси
 function autoSelectService() {
