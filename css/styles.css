@@ -1087,15 +1087,15 @@ input:-webkit-autofill:active {
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
    
  
-        .popup-overlay {
+.popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
+    transform: scale(0);
     width: 100vw;
     height: 100vh;
     z-index: 60;
     
-    background-color: rgba(0, 0, 0, 0.1); /* Легке затемнення для контрасту */
     backdrop-filter: blur(8px);  
     -webkit-backdrop-filter: blur(8px); 
 
@@ -1103,36 +1103,29 @@ input:-webkit-autofill:active {
     justify-content: center;
     align-items: center;
 
-    /* Ховаємо оверлей через прозорість */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.popup-overlay.show {
-    opacity: 1;
-    visibility: visible;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
 }
 
 .popup {
-    position: relative; /* Щоб хрестик позиціонувався відносно картки */
     padding: 2rem; 
     background-color: #ffffff;
     border: 3px solid #00b3ff;
     border-radius: 20px;
     
-    /* Об'єднав дві тіні в одну правильну */
+    backdrop-filter: blur(8px);  
+    -webkit-backdrop-filter: blur(8px); 
+    
+    position: relative;
     box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.3), inset 3px 5px 10px rgba(0, 0, 0, 0.3);
 
     max-width: 70%;
     max-height: 80%;
-    
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    will-change: transform;
 }
 
 .popup__title {
@@ -1161,13 +1154,12 @@ input:-webkit-autofill:active {
     position: absolute;
     top: -2rem;
     right: -2rem;
-    cursor: pointer;
-    transition: transform 0.2s;
 }
 
 .closePopup:hover {
     transform: scale(1.1);
 }
+
 
 
 @media (max-width: 1100px) {
