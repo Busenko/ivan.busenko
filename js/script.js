@@ -203,6 +203,8 @@ const closePopupBtn = document.querySelector(".closePopup");
 
 const popupTitle = popupOverlay.querySelector(".popup__title");
 const popupWraper = popupOverlay.querySelector(".popup__wraper");
+// ШУКАЄМО САМУ КАРТКУ ПОПАПА (саме її будемо анімувати)
+const popupCard = popupOverlay.querySelector(".popup"); 
 
 let lastClickedButton = null;
 let isAnimating = false; 
@@ -210,12 +212,12 @@ let isAnimating = false;
 openPopupBtns.forEach(button => {
     button.addEventListener("click", function () {
         if (isAnimating) return; 
+        isAnimating = true;
         lastClickedButton = button;
 
         const targetId = button.getAttribute("data-target");
         const sourceContent = document.getElementById(targetId);
 
-        const buttonRect = button.getBoundingClientRect();
         let newTitle = "";
         let newBody = "";
 
@@ -226,43 +228,44 @@ openPopupBtns.forEach(button => {
             if (bodyEl) newBody = bodyEl.innerHTML;
         }
 
+        if (newTitle) popupTitle.innerHTML = newTitle;
+        if (newBody) popupWraper.innerHTML = newBody;
+
+        // --- МАТЕМАТИКА ПОЗИЦІЇ ---
+        // Знаходимо центр кнопки
+        const btnRect = button.getBoundingClientRect();
+        const btnCenterX = btnRect.left + btnRect.width / 2;
+        const btnCenterY = btnRect.top + btnRect.height / 2;
+
+        // Знаходимо центр екрана
+        const winCenterX = window.innerWidth / 2;
+        const winCenterY = window.innerHeight / 2;
+
+        // Рахуємо дистанцію від центру екрана до кнопки
+        const startX = btnCenterX - winCenterX;
+        const startY = btnCenterY - winCenterY;
+
+        // 1. Готуємо початковий стан (ховаємо картку в кнопку)
+        popupCard.style.transition = "none";
+        popupCard.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
+        
+        // Показуємо оверлей (фон)
+        popupOverlay.classList.add("show");
+        body.classList.add('stop-scrolling');
+
+        // 2. Запускаємо анімацію
         requestAnimationFrame(() => {
-            if (newTitle) popupTitle.innerHTML = newTitle;
-            if (newBody) popupWraper.innerHTML = newBody;
-
-            popupOverlay.style.transition = "none";
-            popupOverlay.style.transform = `scale(0)`;
-            popupOverlay.classList.add("show");
-
             requestAnimationFrame(() => {
-                const winWidth = window.innerWidth;
-                const winHeight = window.innerHeight;
-                const popupWidth = popupOverlay.offsetWidth;
-                const popupHeight = popupOverlay.offsetHeight;
+                // Красива пружна анімація вильоту
+                popupCard.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)";
+                // Flexbox і так тримає картку по центру, тому просто скидаємо translate в 0
+                popupCard.style.transform = `translate3d(0, 0, 0) scale(1)`;
 
-                const endX = winWidth / 2 - popupWidth / 2;
-                const endY = winHeight / 2 - popupHeight / 2;
-
-                const startX = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
-                const startY = buttonRect.top + buttonRect.height / 2 - popupHeight / 2;
-                popupOverlay.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
-
-                requestAnimationFrame(() => {
-                    isAnimating = true;
-
-          
-                    popupOverlay.style.transition = "transform 0.3s ease-out";
-                  
-                    popupOverlay.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(1)`;
-
-                    body.classList.add('stop-scrolling');
-
-                    
-                    popupOverlay.addEventListener('transitionend', function handler(e) {
-                        if (e.target !== popupOverlay) return;
-                        isAnimating = false;
-                        popupOverlay.removeEventListener('transitionend', handler);
-                    });
+                popupCard.addEventListener('transitionend', function handler(e) {
+                    // Перевіряємо, чи це саме трансформація картки
+                    if (e.target !== popupCard) return; 
+                    isAnimating = false;
+                    popupCard.removeEventListener('transitionend', handler);
                 });
             });
         });
@@ -279,36 +282,33 @@ function closePopup() {
     if (!lastClickedButton || isAnimating) return;
     isAnimating = true;
 
+    // Знову рахуємо координати кнопки (бо користувач міг змінити розмір вікна)
+    const btnRect = lastClickedButton.getBoundingClientRect();
+    const btnCenterX = btnRect.left + btnRect.width / 2;
+    const btnCenterY = btnRect.top + btnRect.height / 2;
+    const winCenterX = window.innerWidth / 2;
+    const winCenterY = window.innerHeight / 2;
 
-    const buttonRect = lastClickedButton.getBoundingClientRect();
-    const popupWidth = popupOverlay.offsetWidth;
-    const popupHeight = popupOverlay.offsetHeight;
+    const endX = btnCenterX - winCenterX;
+    const endY = btnCenterY - winCenterY;
 
-    const endX = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
-    const endY = buttonRect.top + buttonRect.height / 2 - popupHeight / 2;
+    // Анімуємо картку назад у кнопку
+    popupCard.style.transition = "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+    popupCard.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
+    
+    // Ховаємо фон
+    popupOverlay.classList.remove("show");
 
-
-    requestAnimationFrame(() => {
-
-        popupOverlay.style.transition = "transform 0.3s ease-out";
-        popupOverlay.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
-
-
-        popupOverlay.addEventListener('transitionend', function handler(e) {
-            if (e.target !== popupOverlay) return;
-            
-            popupOverlay.classList.remove("show");
-            body.classList.remove('stop-scrolling');
-            
+    popupCard.addEventListener('transitionend', function handler(e) {
+        if (e.target !== popupCard) return;
         
-            popupOverlay.style.transition = "none";
-            
-            lastClickedButton = null;
-            isAnimating = false;
-            popupOverlay.removeEventListener('transitionend', handler);
-        });
+        body.classList.remove('stop-scrolling');
+        lastClickedButton = null;
+        isAnimating = false;
+        popupCard.removeEventListener('transitionend', handler);
     });
 }
+
 
 // ..............................................................................................Сервіси
 function autoSelectService() {
