@@ -258,7 +258,7 @@ bottom: -18px;
 .block-100{
     width: 100%;
      padding: 2rem 0;
-    overflow: hidden;
+    
 }
 
 .block-columns{
@@ -1226,10 +1226,13 @@ input:-webkit-autofill:active {
     width: 100%;
     
    contain: layout;
+  overflow
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y; 
     user-select: none; 
       -webkit-user-select: none;
+      
+      overflow: hidden;
 }
 
 
