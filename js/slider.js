@@ -3,14 +3,14 @@ const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 30; 
 
 // --- НАЛАШТУВАННЯ ПЛАВНОСТІ ---
-const ACTIVE_SCALE = 1;     // Розмір головного слайду (90%)
+const ACTIVE_SCALE = 0.9;     // Розмір головного слайду (90%)
 const INACTIVE_SCALE = 0.8;   // Розмір бокових слайдів (70%)
 const ACTIVE_OPACITY = 1;     // Прозорість головного слайду (100%)
 const INACTIVE_OPACITY = 0.5; // Прозорість бокових слайдів (50%)
 const ANIMATION_SPEED = 0.15; // Швидкість дотягування
 
 
-const COMPACT_SPACING = 30;
+const COMPACT_SPACING = 40;
 
 
 const slider = document.querySelector('.slider');
