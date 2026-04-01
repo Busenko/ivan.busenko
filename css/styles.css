@@ -1204,18 +1204,18 @@ input:-webkit-autofill:active {
 
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
 .present {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .container {
     width: 64vw;
     position: relative;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1224,22 +1224,15 @@ input:-webkit-autofill:active {
 
 .slider {
     width: 100%;
-    
-   contain: layout;
-  
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y; 
+    contain: layout; /* Ізоляція макета, яку ми додали для фіксу іконок */
+    touch-action: pan-y; /* Дозволяє скрол вниз, але блокує свайп сторінки вбік */
     user-select: none; 
-      -webkit-user-select: none;
-      
-      
+    -webkit-user-select: none;
 }
-
 
 .slides {
     display: flex;
     height: auto;
-    opacity: 1;
     will-change: transform;
 }
 
@@ -1248,20 +1241,16 @@ input:-webkit-autofill:active {
     width: 100%;
     height: auto;
     position: relative;
-
     will-change: transform, opacity;
-    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
+    /* transition прибрано, бо тепер за плавність відповідає JS */
 }
 
+/* Залишили лише z-index, щоб головний слайд завжди перекривав бокові */
 .slide.active {
-    transform: scale(1) translateZ(0);
-    opacity: 1;
     z-index: 2;
 }
 
 .slide.inactive {
-    transform: scale(0.95) translateZ(0);
-    opacity: 0.6;
     z-index: 1;
 }
 
@@ -1276,57 +1265,32 @@ input:-webkit-autofill:active {
     align-items: center;
 }
 
-
 #slide-design {
-   
     border: solid 3px transparent;
     border-radius: 2rem;
-
-background: 
+    background: 
         linear-gradient(135deg,  rgb(215,225,255) 0%,rgb(188,224,255) 65%,rgb(112,159,255) 100%) padding-box,
         linear-gradient(135deg, #7295ff, #2e5cff) border-box; 
-
     box-shadow: 0 10px 20px rgba(0, 21, 139, 0.2);
-   
-    
-}
-#slide-design .slide_content {
-    /* background-color: rgba(0, 255, 38, 0.1);  */
-
-}
-#slide-anim {
-    
-     border: solid 3px transparent;
-    border-radius: 2rem;
-
-  background: 
-        linear-gradient(135deg,  rgb(219,254,255) 0%,rgb(219,255,231) 65%,rgb(109,249,228) 100%) padding-box,
-    
-        linear-gradient(135deg, #00b084, #47ceb3) border-box;
-
-     box-shadow: 0 10px 20px rgba(0, 134, 116, 0.2);
-}
-#slide-anim .slide_content {
-    /* background-color: rgba(255, 208, 0, 0.1);  */
-
 }
 
-#slide-dev {
-    
+#slide-animation {
     border: solid 3px transparent;
     border-radius: 2rem;
-    /* background-color:#fae4ff; */
-background: 
+    background: 
+        linear-gradient(135deg,  rgb(219,254,255) 0%,rgb(219,255,231) 65%,rgb(109,249,228) 100%) padding-box,
+        linear-gradient(135deg, #00b084, #47ceb3) border-box;
+    box-shadow: 0 10px 20px rgba(0, 134, 116, 0.2);
+}
+
+#slide-development {
+    border: solid 3px transparent;
+    border-radius: 2rem;
+    background: 
         linear-gradient(135deg,  rgb(250,228,255) 0%,rgb(198,207,255) 65%,rgb(235,145,247) 100%) padding-box,
         linear-gradient(135deg, #9100b5, #c232ff) border-box; 
-
     box-shadow: 0 10px 20px rgba(98, 0, 136, 0.2);
 }
-#slide-dev .slide_content {
-    /* background-color: rgba(183, 0, 255, 0.1);  */
-
-}
-
 
 .slide_content {
     position: relative;
@@ -1344,7 +1308,6 @@ background:
     align-items: flex-start;
 }
 
-
 .arrow-prev,
 .arrow-next {
     height: 100%;
@@ -1354,10 +1317,8 @@ background:
     bottom: 0;
     display: flex;
     color: #00b3ff;
-    
     align-items: center;
 }
-
 
 .arrow-prev {
     left: 6px;
@@ -1372,6 +1333,7 @@ background:
     width: 2rem;
     transform: rotate(90deg);
 }
+
 
 @media (max-width: 1100px) {
 
