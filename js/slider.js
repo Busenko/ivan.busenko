@@ -1,4 +1,4 @@
-Const VISIBLE_SLIDES = 5;
+const VISIBLE_SLIDES = 5;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 50;
 const IS_TOUCH_DEVICE = 'ontouchstart' in window;
