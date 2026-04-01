@@ -1213,7 +1213,6 @@ input:-webkit-autofill:active {
 
 .container {
     width: 64vw;
-    height: auto;
     position: relative;
 
     display: flex;
@@ -1226,13 +1225,13 @@ input:-webkit-autofill:active {
     width: 100%;
     
    contain: layout;
-  overflow
+  
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y; 
     user-select: none; 
       -webkit-user-select: none;
       
-      overflow: hidden;
+      
 }
 
 
