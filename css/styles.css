@@ -1086,87 +1086,88 @@ input:-webkit-autofill:active {
 }
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
    
-    .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        transform: scale(0);
-        width: 100vw;
-        height: 100vh;
-        z-index: 60;
-        
-        backdrop-filter: blur(8px);  
-        -webkit-backdrop-filter: blur(8px); 
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        will-change: transform, opacity;
-        backface-visibility: hidden;
-
-    }
+ 
+        .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 60;
     
-    .popup {
-        
+    background-color: rgba(0, 0, 0, 0.1); /* Легке затемнення для контрасту */
+    backdrop-filter: blur(8px);  
+    -webkit-backdrop-filter: blur(8px); 
 
-        padding: 2rem; 
-        background-color: #ffffff;
-        border: 3px solid #00b3ff;
-        border-radius: 20px;
-        
-        backdrop-filter: blur(8px);  
-        -webkit-backdrop-filter: blur(8px); 
-        box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.3);
-        box-shadow: inset 3px 5px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Ховаємо оверлей через прозорість */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.popup-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup {
+    position: relative; /* Щоб хрестик позиціонувався відносно картки */
+    padding: 2rem; 
+    background-color: #ffffff;
+    border: 3px solid #00b3ff;
+    border-radius: 20px;
     
-        max-width: 70%;
-        max-height: 80%;
-        
+    /* Об'єднав дві тіні в одну правильну */
+    box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.3), inset 3px 5px 10px rgba(0, 0, 0, 0.3);
+
+    max-width: 70%;
+    max-height: 80%;
     
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    }
+    will-change: transform;
+}
 
+.popup__title {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
+.popup__wraper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
 
-    .popup__title{
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
+.popup__wraper::-webkit-scrollbar {
+    width: 0em; 
+}
 
-    .popup__wraper{
-       
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-    }
+.popup__wraper::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
 
-    .popup__wraper::-webkit-scrollbar {
-        width: 0em; 
-    }
-    
-    .popup__wraper::-webkit-scrollbar-thumb {
-        background-color: transparent;
-    }
+.closePopup {
+    position: absolute;
+    top: -2rem;
+    right: -2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
 
-    
-
-    .closePopup {
-        position: absolute;
-        top: -2rem;
-        right: -2rem;
-    }
-    
-    .closePopup:hover {
-        transform: scale(1.1);
-    }
+.closePopup:hover {
+    transform: scale(1.1);
+}
 
 
 @media (max-width: 1100px) {
