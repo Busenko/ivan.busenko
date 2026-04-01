@@ -1086,16 +1086,13 @@ input:-webkit-autofill:active {
 }
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
    
- 
 .popup-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    transform: scale(0);
-    width: 100vw;
-    height: 100vh;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     z-index: 60;
     
+    background-color: rgba(0, 0, 0, 0.2); /* Легке затемнення */
     backdrop-filter: blur(8px);  
     -webkit-backdrop-filter: blur(8px); 
 
@@ -1103,18 +1100,23 @@ input:-webkit-autofill:active {
     justify-content: center;
     align-items: center;
 
-    will-change: transform, opacity;
-    backface-visibility: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+    will-change: opacity; /* Кажемо відеокарті не напружуватись */
 }
+
+.popup-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
 
 .popup {
     padding: 2rem; 
     background-color: #ffffff;
     border: 3px solid #00b3ff;
     border-radius: 20px;
-    
-    backdrop-filter: blur(8px);  
-    -webkit-backdrop-filter: blur(8px); 
     
     position: relative;
     box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.3), inset 3px 5px 10px rgba(0, 0, 0, 0.3);
@@ -1126,6 +1128,11 @@ input:-webkit-autofill:active {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: scale(0); 
+
 }
 
 .popup__title {
