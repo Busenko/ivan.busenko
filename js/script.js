@@ -199,7 +199,7 @@ itemsControl();
 const body = document.body;
 const openPopupBtns = document.querySelectorAll(".openPopup");
 const popupOverlay = document.getElementById("popupOverlay");
-const popupCard = popupOverlay.querySelector(".popup"); // Анімуємо лише саму картку
+const popupCard = popupOverlay.querySelector(".popup"); 
 
 const popupTitle = popupOverlay.querySelector(".popup__title");
 const popupWraper = popupOverlay.querySelector(".popup__wraper");
@@ -222,23 +222,23 @@ openPopupBtns.forEach(button => {
             if (bodyEl) popupWraper.innerHTML = bodyEl.innerHTML;
         }
 
-        // РАХУЄМО ПОЗИЦІЮ ВІДНОСНО ЦЕНТРУ ЕКРАНА
         const btnRect = button.getBoundingClientRect();
         const startX = (btnRect.left + btnRect.width / 2) - (window.innerWidth / 2);
         const startY = (btnRect.top + btnRect.height / 2) - (window.innerHeight / 2);
 
-        // 1. Миттєво ховаємо картку в кнопку (без анімації)
+        // 1. Миттєво, БЕЗ анімації, ховаємо картку в кнопку
         popupCard.style.transition = "none";
         popupCard.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
         
-        // 2. Показуємо розмитий фон (плавно з'явиться)
+        // 2. Показуємо оверлей
         popupOverlay.classList.add("show");
         body.classList.add('stop-scrolling');
 
-        // Примусовий перерахунок стилів, щоб браузер побачив стартову точку
+        // 3. ТВІЙ ОРИГІНАЛЬНИЙ ХАК (Примусовий перерахунок макета)
+        // Це змушує браузер "побачити", що картка зараз маленька, ПЕРЕД тим як її збільшувати
         void popupCard.offsetWidth;
 
-        // 3. ТВОЯ ОРИГІНАЛЬНА АНІМАЦІЯ ВИЛЬОТУ (строгий ease-out 0.3s)
+        // 4. Тепер вмикаємо анімацію і вистрілюємо картку
         isAnimating = true;
         popupCard.style.transition = "transform 0.3s ease-out";
         popupCard.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
@@ -262,12 +262,11 @@ function closePopup() {
     if (!lastClickedButton || isAnimating) return;
     isAnimating = true;
 
-    // Знову рахуємо координати кнопки для точного повернення
     const btnRect = lastClickedButton.getBoundingClientRect();
     const endX = (btnRect.left + btnRect.width / 2) - (window.innerWidth / 2);
     const endY = (btnRect.top + btnRect.height / 2) - (window.innerHeight / 2);
 
-    // ТВОЯ ОРИГІНАЛЬНА АНІМАЦІЯ ЗГОРТАННЯ В КНОПКУ (0.3s ease-out)
+    // Ховаємо картку назад у кнопку
     popupCard.style.transition = "transform 0.3s ease-out";
     popupCard.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
     
@@ -284,7 +283,6 @@ function closePopup() {
     };
     popupCard.addEventListener('transitionend', onEnd);
 }
-
 
 // ..............................................................................................Сервіси
 function autoSelectService() {
