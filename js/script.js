@@ -234,13 +234,12 @@ openPopupBtns.forEach(button => {
         popupOverlay.classList.add("show");
         body.classList.add('stop-scrolling');
 
-        // 3. БРОНЬОВАНИЙ ХАК (setTimeout)
-        // Даємо браузеру 10 мілісекунд, щоб він відрендерив стартову позицію в кнопці
+         
         setTimeout(() => {
             isAnimating = true;
             
-            // 4. Тепер вмикаємо анімацію і вистрілюємо картку
-            popupCard.style.transition = "transform 0.3s ease-out";
+            
+            popupCard.style.transition = "transform 0.5s ease-out";
             popupCard.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
 
             const onEnd = (e) => {
@@ -249,7 +248,7 @@ openPopupBtns.forEach(button => {
                 popupCard.removeEventListener('transitionend', onEnd);
             };
             popupCard.addEventListener('transitionend', onEnd);
-        }, 10);
+        }, 30);
     });
 });
 
