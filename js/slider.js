@@ -2,10 +2,13 @@ const VISIBLE_SLIDES = 5;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 30; 
 
-// Налаштування плавності
-const INACTIVE_SCALE = 0.9;   
-const INACTIVE_OPACITY = 0.5; 
-const ANIMATION_SPEED = 0.15; 
+// --- НАЛАШТУВАННЯ ПЛАВНОСТІ ---
+const ACTIVE_SCALE = 0.9;     // Розмір головного слайду (90%)
+const INACTIVE_SCALE = 0.7;   // Розмір бокових слайдів (70%)
+const ACTIVE_OPACITY = 1;     // Прозорість головного слайду (100%)
+const INACTIVE_OPACITY = 0.5; // Прозорість бокових слайдів (50%)
+const ANIMATION_SPEED = 0.15; // Швидкість дотягування
+ 
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
@@ -51,8 +54,9 @@ const updateVisuals = () => {
         const distance = (i - CENTER_INDEX) * slideWidth + currentDrag;
         const ratio = Math.min(1, Math.abs(distance) / slideWidth); 
 
-        const scale = 1 - (1 - INACTIVE_SCALE) * ratio;
-        const opacity = 1 - (1 - INACTIVE_OPACITY) * ratio;
+        // Нова математика: плавний перехід від ACTIVE до INACTIVE
+        const scale = ACTIVE_SCALE - (ACTIVE_SCALE - INACTIVE_SCALE) * ratio;
+        const opacity = ACTIVE_OPACITY - (ACTIVE_OPACITY - INACTIVE_OPACITY) * ratio;
 
         slide.style.transform = `scale(${scale})`;
         slide.style.opacity = opacity;
@@ -66,6 +70,7 @@ const updateVisuals = () => {
         }
     });
 };
+
 
 const shiftDOM = (direction) => {
     const total = originalSlides.length;
