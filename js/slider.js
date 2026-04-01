@@ -16,36 +16,12 @@ let dragOffset = 0;
 let allowInteraction = true;
 let isHorizontalSwipe = null;
 let lastInputType = null;
-let rafId = null; // Для requestAnimationFrame
+let rafId = null;
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
 const arrowNext = document.querySelector('.arrow-next');
 const arrowPrev = document.querySelector('.arrow-prev');
-
-// --- Оптимізоване встановлення висот (запобігає Layout Thrashing) ---
-const setHeights = (targetSlide = null) => {
-    // Читаємо DOM (offsetHeight) в одному кадрі...
-    requestAnimationFrame(() => {
-        const target = targetSlide || slideBlock.children[CENTER_INDEX];
-        if (!target) return;
-
-        const slideTop = target.querySelector('.slide__top');
-        const slideBottom = target.querySelector('.slide__bottom');
-        const imgHeightEl = target.querySelector('.img__height');
-
-        const slideHeight = imgHeightEl ? imgHeightEl.offsetHeight : 0;
-        const topHeight = slideTop ? slideTop.offsetHeight : 0;
-        const bottomHeight = slideBottom ? slideBottom.offsetHeight : 0;
-
-        // ...а записуємо (setProperty) в наступному. Це розриває цикл зависань.
-        requestAnimationFrame(() => {
-            document.documentElement.style.setProperty('--slide-height', `${slideHeight}px`);
-            document.documentElement.style.setProperty('--slide-top-height', `${topHeight}px`);
-            document.documentElement.style.setProperty('--slide-bottom-height', `${bottomHeight}px`);
-        });
-    });
-};
 
 const applySlideSizes = () => {
     slideWidth = slider.clientWidth;
@@ -53,7 +29,6 @@ const applySlideSizes = () => {
 
 const getIndex = (i, total) => (i + total) % total;
 
-// --- Відмальовування через DocumentFragment (1 зміна DOM замість 5) ---
 const renderSlides = () => {
     const total = slides.length;
     const fragment = document.createDocumentFragment();
@@ -80,13 +55,9 @@ const renderSlides = () => {
     slideBlock.appendChild(fragment);
 
     slideBlock.style.transition = 'none';
-    // Використовуємо translate3d для включення GPU-прискорення
     slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
-    
-    setHeights();
 };
 
-// --- Зміна слайда ---
 const handleSlideChange = (direction) => {
     if (isAnimating || !allowInteraction) return;
     allowInteraction = false;
@@ -102,7 +73,6 @@ const handleSlideChange = (direction) => {
     const oldCenter = slideBlock.children[CENTER_INDEX];
     const futureCenter = slideBlock.children[shift];
 
-    // Зміна класів (анімація тепер керується CSS)
     if (oldCenter) {
         oldCenter.classList.remove('active');
         oldCenter.classList.add('inactive');
@@ -115,9 +85,8 @@ const handleSlideChange = (direction) => {
     slideBlock.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
     slideBlock.style.transform = `translate3d(-${shift * slideWidth}px, 0, 0)`;
 
-    // Використовуємо обробник, який видаляє сам себе
     const onTransitionEnd = (e) => {
-        if (e.target !== slideBlock) return; // Ігноруємо події від внутрішніх елементів
+        if (e.target !== slideBlock) return;
         slideBlock.removeEventListener('transitionend', onTransitionEnd);
         
         currentIndex = newIndex;
@@ -132,7 +101,6 @@ const handleSlideChange = (direction) => {
 const nextSlide = () => handleSlideChange('next');
 const prevSlide = () => handleSlideChange('prev');
 
-// --- Оновлення позиції під час свайпу (rAF) ---
 const performDragAnimation = () => {
     if (isDragging || lastInputType === 'touch') {
         slideBlock.style.transition = 'none';
@@ -141,7 +109,6 @@ const performDragAnimation = () => {
     rafId = null;
 };
 
-// --- Touch-події ---
 const handleTouchStart = (e) => {
     if (!allowInteraction) return;
     lastInputType = 'touch';
@@ -170,7 +137,6 @@ const handleTouchMove = (e) => {
     const diff = touchStartX - touchEndX;
     dragOffset = Math.max(-slideWidth * 0.3, Math.min(slideWidth * 0.3, -diff));
 
-    // Пропускаємо кадри через rAF для ідеальної плавності
     if (!rafId) {
         rafId = requestAnimationFrame(performDragAnimation);
     }
@@ -196,7 +162,6 @@ const handleTouchEnd = () => {
     isHorizontalSwipe = null;
 };
 
-// --- Mouse-події ---
 const handleMouseDown = (e) => {
     if (IS_TOUCH_DEVICE || !allowInteraction) return;
     lastInputType = 'mouse';
@@ -234,9 +199,7 @@ const handleMouseUp = () => {
     dragOffset = 0;
 };
 
-// --- Ініціалізація ---
 const initSlider = () => {
-    // Зберігаємо оригінальні вузли
     slides = Array.from(document.querySelectorAll('.slide'));
     
     applySlideSizes();
@@ -263,7 +226,6 @@ const initSlider = () => {
 if (arrowNext) arrowNext.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
 if (arrowPrev) arrowPrev.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
 
-// --- Дебаунс для ресайзу (щоб не вішати браузер при зміні орієнтації) ---
 let lastWindowWidth = window.innerWidth;
 let resizeTimeout;
 
@@ -276,7 +238,7 @@ window.addEventListener('resize', () => {
             applySlideSizes();
             renderSlides();
         }
-    }, 150); // Чекаємо 150мс після закінчення ресайзу
+    }, 150);
 });
 
 document.addEventListener('DOMContentLoaded', initSlider);
