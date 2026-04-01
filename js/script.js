@@ -199,7 +199,7 @@ itemsControl();
 const body = document.body;
 const openPopupBtns = document.querySelectorAll(".openPopup");
 const popupOverlay = document.getElementById("popupOverlay");
-const closePopupBtn = document.querySelector(".closePopup");
+const popupCard = popupOverlay.querySelector(".popup"); // Анімуємо лише саму картку
 
 const popupTitle = popupOverlay.querySelector(".popup__title");
 const popupWraper = popupOverlay.querySelector(".popup__wraper");
@@ -215,51 +215,40 @@ openPopupBtns.forEach(button => {
         const targetId = button.getAttribute("data-target");
         const sourceContent = document.getElementById(targetId);
 
-        let newTitle = "";
-        let newBody = "";
-
         if (sourceContent) {
             const titleEl = sourceContent.querySelector(".popup-custom-title");
             const bodyEl = sourceContent.querySelector(".popup-custom-body");
-            if (titleEl) newTitle = titleEl.innerHTML;
-            if (bodyEl) newBody = bodyEl.innerHTML;
+            if (titleEl) popupTitle.innerHTML = titleEl.innerHTML;
+            if (bodyEl) popupWraper.innerHTML = bodyEl.innerHTML;
         }
 
-        if (newTitle) popupTitle.innerHTML = newTitle;
-        if (newBody) popupWraper.innerHTML = newBody;
+        // РАХУЄМО ПОЗИЦІЮ ВІДНОСНО ЦЕНТРУ ЕКРАНА
+        const btnRect = button.getBoundingClientRect();
+        const startX = (btnRect.left + btnRect.width / 2) - (window.innerWidth / 2);
+        const startY = (btnRect.top + btnRect.height / 2) - (window.innerHeight / 2);
 
-        // Твоя оригінальна математика
-        const buttonRect = button.getBoundingClientRect();
-        const winWidth = window.innerWidth;
-        const winHeight = window.innerHeight;
-        const popupWidth = popupOverlay.offsetWidth;
-        const popupHeight = popupOverlay.offsetHeight;
-
-        const endX = winWidth / 2 - popupWidth / 2;
-        const endY = winHeight / 2 - popupHeight / 2;
-
-        const startX = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
-        const startY = buttonRect.top + buttonRect.height / 2 - popupHeight / 2;
-
-        // 1. Ставимо попап у кнопку без анімації
-        popupOverlay.style.transition = "none";
-        popupOverlay.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
+        // 1. Миттєво ховаємо картку в кнопку (без анімації)
+        popupCard.style.transition = "none";
+        popupCard.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
         
-        // Примусовий перерахунок стилів (замінює купу requestAnimationFrame)
-        void popupOverlay.offsetWidth;
-
-        // 2. Запускаємо анімацію збільшення
-        isAnimating = true;
-        popupOverlay.style.transition = "transform 0.3s ease-out";
-        popupOverlay.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(1)`;
+        // 2. Показуємо розмитий фон (плавно з'явиться)
+        popupOverlay.classList.add("show");
         body.classList.add('stop-scrolling');
 
+        // Примусовий перерахунок стилів, щоб браузер побачив стартову точку
+        void popupCard.offsetWidth;
+
+        // 3. ТВОЯ ОРИГІНАЛЬНА АНІМАЦІЯ ВИЛЬОТУ (строгий ease-out 0.3s)
+        isAnimating = true;
+        popupCard.style.transition = "transform 0.3s ease-out";
+        popupCard.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
+
         const onEnd = (e) => {
-            if (e.target !== popupOverlay) return;
+            if (e.target !== popupCard) return;
             isAnimating = false;
-            popupOverlay.removeEventListener('transitionend', onEnd);
+            popupCard.removeEventListener('transitionend', onEnd);
         };
-        popupOverlay.addEventListener('transitionend', onEnd);
+        popupCard.addEventListener('transitionend', onEnd);
     });
 });
 
@@ -273,31 +262,28 @@ function closePopup() {
     if (!lastClickedButton || isAnimating) return;
     isAnimating = true;
 
-    // Знову рахуємо координати кнопки для повернення
-    const buttonRect = lastClickedButton.getBoundingClientRect();
-    const popupWidth = popupOverlay.offsetWidth;
-    const popupHeight = popupOverlay.offsetHeight;
+    // Знову рахуємо координати кнопки для точного повернення
+    const btnRect = lastClickedButton.getBoundingClientRect();
+    const endX = (btnRect.left + btnRect.width / 2) - (window.innerWidth / 2);
+    const endY = (btnRect.top + btnRect.height / 2) - (window.innerHeight / 2);
 
-    const endX = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
-    const endY = buttonRect.top + buttonRect.height / 2 - popupHeight / 2;
-
-    // Зменшуємо і ховаємо назад у кнопку
-    popupOverlay.style.transition = "transform 0.3s ease-out";
-    popupOverlay.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
+    // ТВОЯ ОРИГІНАЛЬНА АНІМАЦІЯ ЗГОРТАННЯ В КНОПКУ (0.3s ease-out)
+    popupCard.style.transition = "transform 0.3s ease-out";
+    popupCard.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
+    
+    // Ховаємо розмитий фон
+    popupOverlay.classList.remove("show");
 
     const onEnd = (e) => {
-        if (e.target !== popupOverlay) return;
+        if (e.target !== popupCard) return;
         
-        popupOverlay.style.transition = "none";
         body.classList.remove('stop-scrolling');
-        
         lastClickedButton = null;
         isAnimating = false;
-        popupOverlay.removeEventListener('transitionend', onEnd);
+        popupCard.removeEventListener('transitionend', onEnd);
     };
-    popupOverlay.addEventListener('transitionend', onEnd);
+    popupCard.addEventListener('transitionend', onEnd);
 }
-
 
 
 // ..............................................................................................Сервіси
