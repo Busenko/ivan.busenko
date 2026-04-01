@@ -1088,40 +1088,51 @@ input:-webkit-autofill:active {
    
 .popup-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    /* Жорстко прив'язуємо до всіх 4 країв замість використання width/height */
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    
+    height: 100dvh; /* Динамічна висота екрана спеціально для мобільних браузерів */
+    width: 100%;
+    
     z-index: 60;
     display: flex;
     justify-content: center;
     align-items: center;
     
-    /* Контейнер ховаємо, але без opacity, щоб не впливати на дочірні елементи */
     visibility: hidden;
-    transition: visibility 0.3s; /* Чекає завершення анімацій всередині */
+    transition: visibility 0.3s; 
 }
 
 .popup-overlay.show {
     visibility: visible;
 }
 
-/* АНІМАЦІЯ ФОНУ (окремо від картки) */
+
 .popup-overlay::before {
     content: "";
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    
+    top: -50px; 
+    left: -50px; 
+    right: -50px; 
+    bottom: -50px;
     
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(8px);  
     -webkit-backdrop-filter: blur(8px); 
     
     opacity: 0;
-    transition: opacity 0.3s ease; /* Фон плавно з'являється */
+    transition: opacity 0.3s ease; 
     will-change: opacity;
 }
 
 .popup-overlay.show::before {
     opacity: 1;
 }
+
 
 /* САМА КАРТКА */
 .popup {
