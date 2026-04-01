@@ -1091,48 +1091,56 @@ input:-webkit-autofill:active {
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     z-index: 60;
-    
-    background-color: rgba(0, 0, 0, 0.2); /* Легке затемнення */
-    backdrop-filter: blur(8px);  
-    -webkit-backdrop-filter: blur(8px); 
-
     display: flex;
     justify-content: center;
     align-items: center;
-
-    opacity: 0;
+    
+    /* Контейнер ховаємо, але без opacity, щоб не впливати на дочірні елементи */
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s;
-    will-change: opacity; /* Кажемо відеокарті не напружуватись */
+    transition: visibility 0.3s; /* Чекає завершення анімацій всередині */
 }
 
 .popup-overlay.show {
-    opacity: 1;
     visibility: visible;
 }
 
+/* АНІМАЦІЯ ФОНУ (окремо від картки) */
+.popup-overlay::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);  
+    -webkit-backdrop-filter: blur(8px); 
+    
+    opacity: 0;
+    transition: opacity 0.3s ease; /* Фон плавно з'являється */
+    will-change: opacity;
+}
 
+.popup-overlay.show::before {
+    opacity: 1;
+}
+
+/* САМА КАРТКА */
 .popup {
+    position: relative;
+    z-index: 2; /* Щоб бути поверх фону ::before */
     padding: 2rem; 
     background-color: #ffffff;
     border: 3px solid #00b3ff;
     border-radius: 20px;
     
-    position: relative;
-    box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.3), inset 3px 5px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 3px 0 5px rgba(0,0,0,0.3), inset 3px 5px 10px rgba(0,0,0,0.3);
 
-    max-width: 70%;
-    max-height: 80%;
+    max-width: 70%; max-height: 80%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
+    /* Жодного opacity! Вона завжди 100% видима */
     will-change: transform;
     backface-visibility: hidden;
-    transform: scale(0); 
-
+    transform: scale(0);
 }
 
 .popup__title {
@@ -1159,13 +1167,14 @@ input:-webkit-autofill:active {
 
 .closePopup {
     position: absolute;
-    top: -2rem;
-    right: -2rem;
+    top: -2rem; right: -2rem;
+    cursor: pointer;
 }
 
 .closePopup:hover {
     transform: scale(1.1);
 }
+
 
 
 
