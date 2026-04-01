@@ -1134,10 +1134,10 @@ input:-webkit-autofill:active {
 }
 
 
-/* САМА КАРТКА */
+
 .popup {
     position: relative;
-    z-index: 2; /* Щоб бути поверх фону ::before */
+    z-index: 2;
     padding: 2rem; 
     background-color: #ffffff;
     border: 3px solid #00b3ff;
@@ -1148,7 +1148,8 @@ input:-webkit-autofill:active {
     max-width: 70%; max-height: 80%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
 
-    /* Жодного opacity! Вона завжди 100% видима */
+    opacity: 1;
+    
     will-change: transform;
     backface-visibility: hidden;
     transform: scale(0);
