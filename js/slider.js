@@ -4,11 +4,14 @@ const SWIPE_THRESHOLD = 30;
 
 // --- НАЛАШТУВАННЯ ПЛАВНОСТІ ---
 const ACTIVE_SCALE = 1;     // Розмір головного слайду (90%)
-const INACTIVE_SCALE = 0.9;   // Розмір бокових слайдів (70%)
+const INACTIVE_SCALE = 0.8;   // Розмір бокових слайдів (70%)
 const ACTIVE_OPACITY = 1;     // Прозорість головного слайду (100%)
 const INACTIVE_OPACITY = 0.5; // Прозорість бокових слайдів (50%)
 const ANIMATION_SPEED = 0.15; // Швидкість дотягування
- 
+
+
+const COMPACT_SPACING = 20;
+
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
@@ -51,14 +54,23 @@ const updateVisuals = () => {
     slideBlock.style.transform = `translate3d(${-CENTER_INDEX * slideWidth + currentDrag}px, 0, 0)`;
 
     Array.from(slideBlock.children).forEach((slide, i) => {
+        // Рахуємо дистанцію в пікселях від ідеального центру
         const distance = (i - CENTER_INDEX) * slideWidth + currentDrag;
-        const ratio = Math.min(1, Math.abs(distance) / slideWidth); 
+        
+        // relativePosition: 0 (центр), 1 (перший справа), -1 (перший зліва) і т.д.
+        const relativePosition = distance / slideWidth;
+        const ratio = Math.min(1, Math.abs(relativePosition)); 
 
-        // Нова математика: плавний перехід від ACTIVE до INACTIVE
+        // Рахуємо розмір і прозорість
         const scale = ACTIVE_SCALE - (ACTIVE_SCALE - INACTIVE_SCALE) * ratio;
         const opacity = ACTIVE_OPACITY - (ACTIVE_OPACITY - INACTIVE_OPACITY) * ratio;
 
-        slide.style.transform = `scale(${scale})`;
+        // --- МАГІЯ СТЯГУВАННЯ ---
+        // Чим далі слайд, тим сильніше він тягнеться до центру (множимо на COMPACT_SPACING)
+        const translateX = relativePosition * -COMPACT_SPACING;
+
+        // Застосовуємо одночасно зсув (translateX) та розмір (scale)
+        slide.style.transform = `translateX(${translateX}px) scale(${scale})`;
         slide.style.opacity = opacity;
 
         if (ratio < 0.5) {
@@ -70,6 +82,7 @@ const updateVisuals = () => {
         }
     });
 };
+
 
 
 const shiftDOM = (direction) => {
