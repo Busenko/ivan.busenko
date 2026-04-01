@@ -239,7 +239,7 @@ openPopupBtns.forEach(button => {
             isAnimating = true;
             
             
-            popupCard.style.transition = "transform 0.5s ease-out";
+            popupCard.style.transition = "transform 0.4s cubic-bezier(0.6, 0, 0.2, 1)";
             popupCard.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
 
             const onEnd = (e) => {
