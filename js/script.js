@@ -400,10 +400,10 @@ function formControl() {
 formControl();
 // /////////////////////////////////////////////////////////////////////////
 
-     const headerAnim = new LottieController('#webdog', '../asset/lottie/webdogs.json');
+     const headerAnim = new LottieController('#webdog', 'asset/lottie/webdogs.json');
 
-    const experienceAnim = new LottieController('#jobdog', '../asset/lottie/exp.json');
-    const skillsAnim = new LottieController('#thanosdog', '../asset/lottie/skill.json');
+    const experienceAnim = new LottieController('#jobdog', 'asset/lottie/exp.json');
+    const skillsAnim = new LottieController('#thanosdog', 'asset/lottie/skill.json');
 
 
 
