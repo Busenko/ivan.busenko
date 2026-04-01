@@ -1,6 +1,6 @@
-const VISIBLE_SLIDES = 5; 
+const VISIBLE_SLIDES = 5;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
-const SWIPE_THRESHOLD = 50;
+const SWIPE_THRESHOLD = 30; // Зменшено для швидшої реакції
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
@@ -12,21 +12,43 @@ let isAnimating = false;
 let currentIndex = 0;
 let originalSlides = [];
 
-// Змінні для свайпів та перетягування
+// Змінні для свайпів
 let isDragging = false;
 let touchStartX = 0;
-let touchStartY = 0;
 let dragOffset = 0;
 let isHorizontalSwipe = null;
-let rafId = null;
 
-// Допоміжна функція для безпечного циклічного індексу
+// Функція циклічного індексу
 const getIndex = (i, total) => ((i % total) + total) % total;
+
+// 1. ФІКС СМИКАННЯ ІКОНОК (JS-ХАК)
+const lockSliderHeight = () => {
+    if (!originalSlides.length) return;
+    
+    // Знаходимо найвищий слайд серед оригіналів
+    let maxHeight = 0;
+    originalSlides.forEach(slide => {
+        const height = slide.offsetHeight;
+        if (height > maxHeight) maxHeight = height;
+    });
+
+    // Якщо висоту знайшли, жорстко прописуємо її в інлайн-стилі слайдера
+    // Тепер, коли DOM буде змінюватися всередині, висота всього блоку не ворухнеться
+    if (maxHeight > 0) {
+        slider.style.height = `${maxHeight}px`;
+        // Також додаємо CSS-ізоляцію, якщо браузер її підтримує
+        slider.style.contain = 'layout';
+        slideBlock.style.height = '100%';
+        slideBlock.style.display = 'flex';
+        slideBlock.style.alignItems = 'stretch';
+    }
+};
 
 const applySlideSizes = () => {
     slideWidth = slider.clientWidth;
     Array.from(slideBlock.children).forEach(slide => {
         slide.style.width = `${slideWidth}px`;
+        slide.style.height = '100%'; // Щоб слайди тягнулися по висоті треку
     });
     slideBlock.style.transition = 'none';
     slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
@@ -34,9 +56,13 @@ const applySlideSizes = () => {
 
 const initSlider = () => {
     originalSlides = Array.from(document.querySelectorAll('.slide'));
+    if (!originalSlides.length) return;
+    
+    // Готуємо трек
     slideBlock.innerHTML = ''; 
+    slideBlock.style.willChange = 'transform'; // Оптимізація для GPU
 
-    // Створюємо початкові 5 слотів лише один раз
+    // Створюємо 5 слотів
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < VISIBLE_SLIDES; i++) {
         const logicalIndex = getIndex(currentIndex + i - CENTER_INDEX, originalSlides.length);
@@ -54,26 +80,88 @@ const initSlider = () => {
     }
     slideBlock.appendChild(fragment);
 
+    // Викликаємо фікси
     applySlideSizes();
+    lockSliderHeight(); // Фіксуємо висоту "намертво"
 
     slideBlock.style.opacity = '1';
     slideBlock.style.transition = 'opacity 0.5s ease';
 
-    // Слухачі для миші
-    slider.addEventListener('mousedown', handleDragStart);
-    window.addEventListener('mousemove', handleDragMove, { passive: false });
-    window.addEventListener('mouseup', handleDragEnd);
+    // Уніфіковані події (миша + тач)
+    const setContext = (e) => (e.type.includes('mouse') ? e : e.touches[0]);
 
-    // Слухачі для тачскрінів
-    slider.addEventListener('touchstart', handleDragStart, { passive: false });
-    slider.addEventListener('touchmove', handleDragMove, { passive: false });
-    slider.addEventListener('touchend', handleDragEnd);
-    slider.addEventListener('touchcancel', handleDragEnd);
+    // НАЧАЛО СВАЙПА
+    const onStart = (e) => {
+        if (isAnimating) return;
+        const ctx = setContext(e);
+        isDragging = true;
+        isHorizontalSwipe = null;
+        touchStartX = ctx.clientX;
+        touchStartY = ctx.clientY;
+        dragOffset = 0;
+        slideBlock.style.transition = 'none'; // Прибираємо транзицію миттєво
+    };
+
+    // РУХ ПАЛЬЦЯ (РОБИМО ПЛАВНІШИМ І ШВИДШИМ)
+    const onMove = (e) => {
+        if (!isDragging || isAnimating) return;
+        const ctx = setContext(e);
+        const deltaX = ctx.clientX - touchStartX;
+        const deltaY = ctx.clientY - touchStartY;
+
+        if (isHorizontalSwipe === null) {
+            isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY);
+        }
+
+        if (e.type.includes('touch') && !isHorizontalSwipe) {
+            isDragging = false; 
+            return;
+        }
+
+        e.preventDefault();
+
+        // Прибираємо ефект опору (гуми), щоб палець йшов 1:1 зі слайдом
+        // Це робить свайп плавнішим і слухнянішим
+        dragOffset = deltaX; 
+
+        // Прибираємо requestAnimationFrame, застосовуємо трансформ негайно.
+        // Це прибирає мікро-затримку реакції.
+        slideBlock.style.transform = `translate3d(${-CENTER_INDEX * slideWidth + dragOffset}px, 0, 0)`;
+    };
+
+    // КІНЕЦЬ СВАЙПА
+    const onEnd = () => {
+        if (!isDragging || isAnimating) return;
+        isDragging = false;
+
+        if (Math.abs(dragOffset) > SWIPE_THRESHOLD) {
+            // Підбираємо швидкість анімації залежно від сили свайпа
+            const speed = Math.max(0.2, Math.min(0.6, 1 - Math.abs(dragOffset) / slideWidth));
+            dragOffset < 0 ? nextSlide(speed) : prevSlide(speed);
+        } else {
+            // Повернення на місце
+            slideBlock.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+            slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
+        }
+        
+        dragOffset = 0;
+        isHorizontalSwipe = null;
+    };
+
+    // Прив'язка подій до слайдера
+    slider.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove, { passive: false });
+    window.addEventListener('mouseup', onEnd);
+
+    slider.addEventListener('touchstart', onStart, { passive: false });
+    slider.addEventListener('touchmove', onMove, { passive: false });
+    slider.addEventListener('touchend', onEnd);
+    slider.addEventListener('touchcancel', onEnd);
 
     slider.addEventListener('contextmenu', (e) => e.preventDefault());
 };
 
-const handleSlideChange = (direction) => {
+const handleSlideChange = (direction, customSpeed = 0.6) => {
     if (isAnimating) return;
     isAnimating = true;
 
@@ -89,118 +177,48 @@ const handleSlideChange = (direction) => {
     futureCenter.classList.remove('inactive');
     futureCenter.classList.add('active');
 
-    slideBlock.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    // Використовуємо адаптивну швидкість (або стандартну)
+    slideBlock.style.transition = `transform ${customSpeed}s cubic-bezier(0.2, 1, 0.3, 1)`;
     slideBlock.style.transform = `translate3d(${newTransform}px, 0, 0)`;
 
     slideBlock.addEventListener('transitionend', function onTransitionEnd(e) {
         if (e.target !== slideBlock) return;
         slideBlock.removeEventListener('transitionend', onTransitionEnd);
 
-        // --- ЦЕЙ БЛОК РЯТУЄ ВІД СМИКАННЯ ІКОНОК ---
-        // Замість повного очищення, ми акуратно перекидаємо 1 крайній слайд
         if (direction === 'next') {
             currentIndex = getIndex(currentIndex + 1, total);
-            slideBlock.removeChild(slideBlock.firstElementChild); // Видаляємо перший
-            
+            slideBlock.removeChild(slideBlock.firstElementChild); 
             const nextLogicalIndex = getIndex(currentIndex + CENTER_INDEX, total);
             const newSlide = originalSlides[nextLogicalIndex].cloneNode(true);
             newSlide.style.width = `${slideWidth}px`;
+            newSlide.style.height = '100%';
             newSlide.classList.add('slide', 'inactive');
             newSlide.classList.remove('active');
-            
-            slideBlock.appendChild(newSlide); // Додаємо в кінець
+            slideBlock.appendChild(newSlide);
         } else {
             currentIndex = getIndex(currentIndex - 1, total);
-            slideBlock.removeChild(slideBlock.lastElementChild); // Видаляємо останній
-            
+            slideBlock.removeChild(slideBlock.lastElementChild); 
             const prevLogicalIndex = getIndex(currentIndex - CENTER_INDEX, total);
             const newSlide = originalSlides[prevLogicalIndex].cloneNode(true);
             newSlide.style.width = `${slideWidth}px`;
+            newSlide.style.height = '100%';
             newSlide.classList.add('slide', 'inactive');
             newSlide.classList.remove('active');
-            
-            slideBlock.insertBefore(newSlide, slideBlock.firstElementChild); // Вставляємо на початок
+            slideBlock.insertBefore(newSlide, slideBlock.firstElementChild);
         }
 
-        // Миттєве скидання позиції треку без анімації
         slideBlock.style.transition = 'none';
-        void slideBlock.offsetHeight; // Примусовий перерахунок, щоб уникнути мерехтіння
+        void slideBlock.offsetHeight; // Force Reflow
         slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
         
         isAnimating = false;
     });
 };
 
-const nextSlide = () => handleSlideChange('next');
-const prevSlide = () => handleSlideChange('prev');
+const nextSlide = (speed) => handleSlideChange('next', speed);
+const prevSlide = (speed) => handleSlideChange('prev', speed);
 
-// --- Логіка перетягування (Drag & Swipe) ---
-
-const handleDragStart = (e) => {
-    if (isAnimating) return;
-    isDragging = true;
-    isHorizontalSwipe = null;
-    touchStartX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-    touchStartY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-    dragOffset = 0;
-    slideBlock.style.transition = 'none';
-};
-
-const handleDragMove = (e) => {
-    if (!isDragging || isAnimating) return;
-
-    const currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-    const currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-    const deltaX = currentX - touchStartX;
-    const deltaY = currentY - touchStartY;
-
-    if (isHorizontalSwipe === null) {
-        // Визначаємо, чи користувач свайпає вбік, чи скролить вниз
-        isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY);
-    }
-
-    if (e.type.includes('touch') && !isHorizontalSwipe) {
-        isDragging = false; // Віддаємо керування вертикальному скролу сторінки
-        return;
-    }
-
-    e.preventDefault(); // Блокуємо стандартний скрол при горизонтальному свайпі
-
-    // Опір при перетягуванні (макс. 50% від ширини слайду)
-    dragOffset = Math.max(-slideWidth * 0.5, Math.min(slideWidth * 0.5, deltaX));
-
-    if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-            if (isDragging) {
-                slideBlock.style.transform = `translate3d(${-CENTER_INDEX * slideWidth + dragOffset}px, 0, 0)`;
-            }
-            rafId = null;
-        });
-    }
-};
-
-const handleDragEnd = () => {
-    if (!isDragging || isAnimating) return;
-    isDragging = false;
-
-    if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-    }
-
-    if (Math.abs(dragOffset) > SWIPE_THRESHOLD) {
-        dragOffset < 0 ? nextSlide() : prevSlide();
-    } else {
-        // Якщо свайп був слабким — повертаємо на місце
-        slideBlock.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-        slideBlock.style.transform = `translate3d(-${CENTER_INDEX * slideWidth}px, 0, 0)`;
-    }
-    
-    dragOffset = 0;
-    isHorizontalSwipe = null;
-};
-
-// --- Ініціалізація кнопок та подій ---
+// --- Ініціалізація та кнопки ---
 
 if (arrowNext) arrowNext.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
 if (arrowPrev) arrowPrev.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
@@ -209,7 +227,10 @@ let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
+        // При резайзі перераховуємо все наново
         applySlideSizes();
+        slider.style.height = 'auto'; // Скидаємо висоту
+        lockSliderHeight(); // Задаємо нову висоту
     }, 150);
 });
 
