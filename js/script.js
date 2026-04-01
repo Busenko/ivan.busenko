@@ -129,56 +129,71 @@ function itemsControl() {
 
         if (title && content) {
             title.addEventListener('click', function () {
-                // Перевіряємо, чи блок зараз відкритий (maxHeight більше 0)
                 const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
 
-                // Закриваємо всі інші блоки
+                let heightLostAbove = 0;
+
                 coll.forEach(otherItem => {
-                    const otherContent = otherItem.querySelector('.item-info');
-                    const otherImage = otherItem.querySelector('.img-rotate');
-                    
-                    if (otherContent) {
-                        otherContent.style.maxHeight = '0px';
-                    }
-                    if (otherImage) {
-                        otherImage.classList.remove('rotated');
+                    if (otherItem !== item) {
+                        const otherContent = otherItem.querySelector('.item-info');
+                        const otherImage = otherItem.querySelector('.img-rotate');
+                        
+                        if (otherContent && otherContent.style.maxHeight && otherContent.style.maxHeight !== '0px') {
+                            if (otherItem.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                                heightLostAbove += otherContent.scrollHeight;
+                            }
+                            otherContent.style.maxHeight = '0px';
+                        }
+                        
+                        if (otherImage) {
+                            otherImage.classList.remove('rotated');
+                        }
                     }
                 });
 
-                // Відкриваємо поточний, якщо він був закритий
                 if (!isOpen) {
                     content.style.maxHeight = content.scrollHeight + 'px';
                     if (image) image.classList.add('rotated');
                     
-                    // Перевірка наявності анімації (додав typeof для безпеки)
                     if (item.querySelector('#thanosdog') && typeof skillsAnim !== 'undefined') {
                         skillsAnim.forcePlay();
                     }
+
+                    const headerHeight = title.offsetHeight; 
+                    const contentHeight = content.scrollHeight; 
+                    const finalItemHeight = headerHeight + contentHeight;
+                    const currentItemTop = item.getBoundingClientRect().top + window.scrollY;
+                    const futureItemTop = currentItemTop - heightLostAbove;
+                    const centerPosition = futureItemTop - (window.innerHeight / 2) + (finalItemHeight / 2);
+
+                    window.scrollTo({
+                        top: centerPosition,
+                        behavior: 'smooth'
+                    });
+                } 
+                else {
+                    content.style.maxHeight = '0px';
+                    if (image) image.classList.remove('rotated');
                 }
             });
         }
     });
 
-    // Оптимізований обробник зміни розміру екрана
     let resizeTimeout;
     window.addEventListener('resize', function () {
         clearTimeout(resizeTimeout);
-        
         resizeTimeout = setTimeout(() => {
             coll.forEach(item => {
                 const content = item.querySelector('.item-info');
-                // Перераховуємо висоту тільки для відкритих блоків
                 if (content && content.style.maxHeight && content.style.maxHeight !== '0px') {
-                    // content.scrollHeight автоматично врахує новий розмір тексту
                     content.style.maxHeight = content.scrollHeight + 'px';
                 }
             });
-        }, 250); // Зменшив затримку з 1000мс до 250мс для кращої чуйності UI
+        }, 250);
     });
 }
 
 itemsControl();
-
 
 //ПОПАП ...................................................................................................................
 const body = document.body;
@@ -385,10 +400,10 @@ function formControl() {
 formControl();
 // /////////////////////////////////////////////////////////////////////////
 
-     const headerAnim = new LottieController('#webdog', 'asset/lottie/webdogs.json');
+     const headerAnim = new LottieController('#webdog', '../asset/lottie/webdogs.json');
 
-    const experienceAnim = new LottieController('#jobdog', 'asset/lottie/exp.json');
-    const skillsAnim = new LottieController('#thanosdog', 'asset/lottie/skill.json');
+    const experienceAnim = new LottieController('#jobdog', '../asset/lottie/exp.json');
+    const skillsAnim = new LottieController('#thanosdog', '../asset/lottie/skill.json');
 
 
 
