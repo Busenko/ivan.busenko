@@ -226,11 +226,9 @@ openPopupBtns.forEach(button => {
         const startX = (btnRect.left + btnRect.width / 2) - (window.innerWidth / 2);
         const startY = (btnRect.top + btnRect.height / 2) - (window.innerHeight / 2);
 
-        // 1. Миттєво, БЕЗ анімації, ховаємо картку в кнопку
         popupCard.style.transition = "none";
         popupCard.style.transform = `translate3d(${startX}px, ${startY}px, 0) scale(0)`;
         
-        // 2. Показуємо оверлей
         popupOverlay.classList.add("show");
         body.classList.add('stop-scrolling');
 
@@ -266,11 +264,9 @@ function closePopup() {
     const endX = (btnRect.left + btnRect.width / 2) - (window.innerWidth / 2);
     const endY = (btnRect.top + btnRect.height / 2) - (window.innerHeight / 2);
 
-    // Ховаємо картку назад у кнопку
     popupCard.style.transition = "transform 0.3s ease-out";
     popupCard.style.transform = `translate3d(${endX}px, ${endY}px, 0) scale(0)`;
     
-    // Ховаємо розмитий фон
     popupOverlay.classList.remove("show");
 
     const onEnd = (e) => {
@@ -317,19 +313,43 @@ function formControl() {
     if (!form) return;
 
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const ukrainePhonePattern = /^(?:\+?38)?(?:\(0\d{2}\)|0\d{2})\d{7}$/;
 
-    const name = form.querySelector('#name');
-    const company = form.querySelector('#company');
-    const email = form.querySelector('#email');
-    const project = form.querySelector('#project');
+    const hasCodeThreat = (str) => {
+
+        const codePattern = /<[^>]*>|javascript:|on\w+=/gi;
+        return codePattern.test(str);
+    };
+
+    const layoutMap = {
+        'й':'q', 'ц':'w', 'у':'e', 'к':'r', 'е':'t', 'н':'y', 'г':'u', 'ш':'i', 'щ':'o', 'з':'p', 'х':'[', 'ъ':']', 'ї':']',
+        'ф':'a', 'ы':'s', 'і':'s', 'в':'d', 'а':'f', 'п':'g', 'р':'h', 'о':'j', 'л':'k', 'д':'l', 'ж':';', 'э':'\'', 'є':'\'',
+        'я':'z', 'ч':'x', 'с':'c', 'м':'v', 'и':'b', 'т':'n', 'ь':'m', 'б':',', 'ю':'.', 'ґ':'\\',
+        'Й':'Q', 'Ц':'W', 'У':'E', 'К':'R', 'Е':'T', 'Н':'Y', 'Г':'U', 'Ш':'I', 'Щ':'O', 'З':'P', 'Х':'{', 'Ъ':'}', 'Ї':'}',
+        'Ф':'A', 'Ы':'S', 'І':'S', 'В':'D', 'А':'F', 'П':'G', 'Р':'H', 'О':'J', 'Л':'K', 'Д':'L', 'Ж':':', 'Э':'"', 'Є':'"',
+        'Я':'Z', 'Ч':'X', 'С':'C', 'М':'V', 'И':'B', 'Т':'N', 'Ь':'M', 'Б':'<', 'Ю':'>', 'Ґ':'|'
+    };
+
+    const fixLayout = (str) => str.split('').map(char => layoutMap[char] || char).join('');
 
     const validateField = (field) => {
         let hasError = false;
+        const value = field.value.trim();
 
-        if (field.id === 'name' && field.value.trim().length < 2) hasError = true;
-        if (field.id === 'company' && field.value.trim() === '') hasError = true;
-        if (field.id === 'email' && !emailPattern.test(field.value.trim())) hasError = true;
-        if (field.id === 'project' && field.value.trim().length < 10) hasError = true;
+        if (field.id === 'name' && value.length < 2) hasError = true;
+        if (field.id === 'company' && value === '') hasError = true;
+        if (field.id === 'email' && !emailPattern.test(value)) hasError = true;
+        if (field.id === 'phone' && !ukrainePhonePattern.test(value)) hasError = true;
+        if (field.id === 'project' && value.length < 10) hasError = true;
+
+  
+        if (hasCodeThreat(value)) {
+            console.error("Виявлено спробу введення коду в полі:", field.id);
+            hasError = true;
+        }
+
+        const maxLength = field.tagName === 'TEXTAREA' ? 2000 : 255;
+        if (value.length > maxLength) hasError = true;
 
         if (hasError) {
             field.classList.add('error');
@@ -340,34 +360,44 @@ function formControl() {
         }
     };
 
+    const emailInput = form.querySelector('#email');
+    if (emailInput) {
+        emailInput.addEventListener('input', function() {
+            this.value = fixLayout(this.value).toLowerCase().replace(/[^a-z0-9.@_-]/g, '');
+        });
+    }
+
+    const phoneInput = form.querySelector('#phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('keypress', (e) => {
+            if (!/[0-9+]/.test(e.key)) e.preventDefault();
+        });
+    }
+
     form.addEventListener('submit', function (e) {
         let isValid = true;
-
-        if (!validateField(name)) isValid = false;
-        if (!validateField(company)) isValid = false;
-        if (!validateField(email)) isValid = false;
-        if (!validateField(project)) isValid = false;
+        const fields = form.querySelectorAll('input, textarea');
+        
+        fields.forEach(field => {
+            if (!validateField(field)) isValid = false;
+        });
 
         if (!isValid) {
             e.preventDefault();
+            // дія
         }
     });
 
     const inputs = form.querySelectorAll('input, textarea');
     inputs.forEach(input => {
-        
         input.addEventListener('input', function () {
             this.classList.remove('error');
         });
 
         input.addEventListener('blur', function () {
-
-            if (this.value.trim() === '') {
-                this.classList.remove('error'); 
-                return; 
+            if (this.value.trim() !== '') {
+                validateField(this);
             }
-
-            validateField(this);
         });
     });
 }
