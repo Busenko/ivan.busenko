@@ -2,13 +2,12 @@ const VISIBLE_SLIDES = 5;
 const CENTER_INDEX = Math.floor(VISIBLE_SLIDES / 2);
 const SWIPE_THRESHOLD = 30; 
 
-// --- НАЛАШТУВАННЯ ПЛАВНОСТІ ---
-const ACTIVE_SCALE = 0.95;     
-const INACTIVE_SCALE = 0.8;   
+const ACTIVE_SCALE = 1;     
+const INACTIVE_SCALE = 0.9;   
 const ACTIVE_OPACITY = 1;     
 const INACTIVE_OPACITY = 0.5; 
 const ANIMATION_SPEED = 0.15; 
-const COMPACT_SPACING = 30;   
+const COMPACT_SPACING = 10;   
 
 const slider = document.querySelector('.slider');
 const slideBlock = document.querySelector('.slides');
@@ -59,7 +58,7 @@ const updateVisuals = () => {
 
         const scale = ACTIVE_SCALE - (ACTIVE_SCALE - INACTIVE_SCALE) * ratio;
         const opacity = ACTIVE_OPACITY - (ACTIVE_OPACITY - INACTIVE_OPACITY) * ratio;
-        const translateX = relativePosition * -COMPACT_SPACING;
+        const translateX = relativePosition * -COMPACT_SPACING;// * -COMPACT_SPACING
 
         slide.style.transform = `translateX(${translateX}px) scale(${scale})`;
         slide.style.opacity = opacity;
@@ -123,7 +122,6 @@ const animateLoop = () => {
     checkWrap();
     updateVisuals();
 
-    // ЗАПОБІЖНИК 1: Збільшили поріг зупинки до 1px для стабільності
     if (!isDragging && Math.abs(targetDrag - currentDrag) < 1) {
         currentDrag = targetDrag; 
         checkWrap(); 
@@ -217,7 +215,6 @@ const initSlider = () => {
     window.addEventListener('mousemove', onMove, { passive: false });
     window.addEventListener('mouseup', onEnd);
     
-    // ЗАПОБІЖНИК 2: Відпускаємо слайдер, якщо курсор вийшов за вікно або згорнули браузер
     window.addEventListener('mouseleave', onEnd);
     window.addEventListener('blur', onEnd); 
 
