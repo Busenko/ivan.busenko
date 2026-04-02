@@ -157,7 +157,18 @@ function itemsControl() {
                     
                     if (item.querySelector('#thanosdog') && typeof skillsAnim !== 'undefined') {
                         skillsAnim.forcePlay();
+                        
                     }
+                    // ///////////////////////////////////////////////////////////////////////////////DELETE
+                      if (item.querySelector('#thanosdog1') && typeof skillsAnim1 !== 'undefined') {
+                        skillsAnim1.forcePlay();
+                        
+                    }
+                      if (item.querySelector('#thanosdog2') && typeof skillsAnim2 !== 'undefined') {
+                        skillsAnim2.forcePlay();
+                        
+                    }
+                     // ///////////////////////////////////////////////////////////////////////////////DELETE
 
                     const headerHeight = title.offsetHeight; 
                     const contentHeight = content.scrollHeight; 
@@ -410,6 +421,14 @@ formControl();
     const experienceAnim = new LottieController('#jobdog', 'asset/lottie/exp.json');
     const skillsAnim = new LottieController('#thanosdog', 'asset/lottie/skill.json');
 
+
+
+
+    // ///////////////////////////////////////////////////////////////////////////delete
+     const skillsAnim1 = new LottieController('#thanosdog1', 'asset/lottie/skill.json');
+      const skillsAnim2 = new LottieController('#thanosdog2', 'asset/lottie/skill.json');
+
+    // ///////////////////////////////////////////////////////////////////////////delete
 
 
     
