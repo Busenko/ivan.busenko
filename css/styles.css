@@ -1115,10 +1115,10 @@ input:-webkit-autofill:active {
     content: "";
     position: absolute;
     
-    top: -50px; 
+    top: -100px; 
     left: -50px; 
     right: -50px; 
-    bottom: -50px;
+    bottom: -1000px;
     
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(8px);  
