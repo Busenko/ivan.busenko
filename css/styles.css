@@ -449,10 +449,10 @@ strong{font-weight: 700;}
 .svg-list {width: 1.4em; height: 1.4em; flex-shrink: 0; vertical-align: middle; position: relative;}
 
 /* .....................................................pos */
-.icon-link-left{margin-right: 0.3em; top: -0.1em;}
-.icon-link-right{margin-left: 0.3em; top: -0.2em;}
-.icon-button-left{margin-right: 0.3em;}
-.icon-button-right{margin-left: 0.3em;}
+.icon-link-left{margin-right: 0.2em; top: 0em;}
+.icon-link-right{margin-left: 0.2em; top: -0.2em;}
+.icon-button-left{margin-right: 0.2em;}
+.icon-button-right{margin-left: 0.2em;}
 
 
 /* ...................................Link */
