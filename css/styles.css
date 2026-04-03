@@ -99,12 +99,7 @@ h6 {
 
 /* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-@font-face {
-  font-family: 'Inter';
-  src: url('../asset/fonts/InterVariableFont.woff2') format('woff2');
-  font-weight: 100 900; 
-  font-display: swap; 
-}
+
 @font-face {
   font-family: 'Montserrat';
   src: url('../asset/fonts/Montserrat.woff2') format('woff2');
@@ -125,10 +120,22 @@ h6 {
 }
 @font-face {
   font-family: 'Playpen Sans';
-  src: url('../asset/fonts/PlaypenSans.woff2') format('woff2')s;
+  src: url('../asset/fonts/PlaypenSans.woff2') format('woff2');
   font-weight: 100 900;
   font-display: swap;
 }
+/* @font-face {
+  font-family: 'Rubik';
+  src: url('../asset/fonts/Rubik.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Nonito';
+  src: url('../asset/fonts/Nonito.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+} */
 
 .visually-hidden {
   position: absolute;
@@ -206,7 +213,8 @@ body::-webkit-scrollbar-thumb {
 }
 #webdog{
 z-index: 10;
-bottom: -10px;
+bottom: -3.5rem;
+left: -2rem;
 }
 #jobdog{
 z-index: 10;
@@ -252,6 +260,8 @@ bottom: -16px;
      width: 230px;
      height: 180px;
 }
+
+
 }
 @media (max-width: 700px) {
 .anim_wrapper{
@@ -259,9 +269,16 @@ bottom: -16px;
      width: 230px;
      height: 230px;
 }
+#webdog{
+z-index: 10;
+bottom: -3.8rem;
+left: -1.5rem;
+}
+
 
 }
-@media (max-width: 500px) {
+@media (max-width: 400px) {
+
 
 }
 /* BLOCK SECTION............................................................................................................*/
@@ -362,6 +379,8 @@ header{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    position: relative;
 }
 
 
@@ -490,15 +509,51 @@ main{
 /* TEXT...............................................................................................................*/
 
 /* .........................................................................................H1 Ivan Busenko */
-h1{font-family: 'Indie Flower'; color:#250034; font-size: 4.8rem; font-weight: 900; line-height: 1;
+h1{
+
+font-family: 'Bungee', sans-serif; color:#e6ffde; font-size: 10rem; font-weight: 900; line-height: 4rem;
 display: inline-flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
+ -webkit-text-stroke: 4px #279324; 
+gap:2.5rem;
+
+
 }
-/* .........................................................................................H1 Webdogs */
-h1 strong{
-font-family: 'Bungee'; color:#7400b3; font-size: 2rem; font-weight: 900;}
+.h1-text{font-family: 'Montserrat', sans-serif; color:#7400b3; font-size: 4rem; font-weight: 700;  -webkit-text-stroke: 0px transparent; }
+
+#h1-design{
+color: #001c70;
+
+
+
+}
+#h1-anim{
+ color: #00696b;
+
+}
+#h1-dev{
+
+color: #59006d;
+}
+
+.h1-site{
+    font-size: 2rem;
+}
+
+.h1-none{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+
 /* .....................................H2 */
 h2{font-size: 3.2rem; font-weight: 800;}
 /* .....................................H3 */
@@ -652,10 +707,18 @@ li {
 
 @media (max-width: 1100px) {
 
-h1{font-size: 4.6rem; font-weight: 900;
+    h1{
+
+font-size: 8rem; font-weight: 900; line-height: 4rem;
+
+ -webkit-text-stroke: 4px #279324; 
+gap:2rem;
+
+
 }
-/* .........................................................................................H1 Webdogs */
-h1 strong{font-size: 1.8rem; font-weight: 900;}
+.h1-text{font-size: 3rem; font-weight: 700;}
+.h1-site{font-size: 1.5rem;}
+
 /* .....................................H2 */
 h2{font-size: 3rem; font-weight: 800;}
 /* .....................................H3 */
@@ -700,10 +763,7 @@ ul {
 
 @media (max-width: 810px) {
 
-    h1{font-size: 4rem; font-weight: 900;
-}
-/* .........................................................................................H1 Webdogs */
-h1 strong{font-size: 1.6rem; font-weight: 900;}
+
 /* .....................................H2 */
 h2{font-size: 2.4rem; font-weight: 700; text-align: center;}
 /* .....................................H3 */
@@ -755,6 +815,19 @@ ul {
 }
 
 
+@media (max-width: 700px) {
+h1{
+
+font-size: 6rem; font-weight: 900; line-height: 4rem;
+
+ -webkit-text-stroke: 3px #279324; 
+gap:0.5rem;
+
+
+}
+.h1-text{font-size: 1.8rem; font-weight: 700;}
+.h1-site{font-size: 1.2rem;}
+}
 
 
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
