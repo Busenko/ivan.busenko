@@ -517,30 +517,20 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
  -webkit-text-stroke: 4px #279324; 
-gap:2.5rem;
+gap:4rem;
+z-index: 2;
 
-
-}
-.h1-text{font-family: 'Montserrat', sans-serif; color:#7400b3; font-size: 4rem; font-weight: 700;  -webkit-text-stroke: 0px transparent; }
-
-#h1-design{
-color: #001c70;
-
-
+position: relative;
 
 }
-#h1-anim{
- color: #00696b;
+.h1-author{-webkit-text-stroke: 4px #4e0044; color:#e873ff;}
+.h1-text{font-family: 'Montserrat', sans-serif; color:#7400b3; font-size: 4rem; font-weight: 700;  -webkit-text-stroke: 0px transparent; z-index: 1;}
 
-}
-#h1-dev{
+#h1-design{color: #001c70;}
+#h1-anim{color: #00696b;}
+#h1-dev{color: #59006d;}
 
-color: #59006d;
-}
-
-.h1-site{
-    font-size: 2rem;
-}
+.h1-site{font-size: 2rem;}
 
 .h1-none{
 position: absolute;
@@ -708,15 +698,7 @@ li {
 
 @media (max-width: 1100px) {
 
-    h1{
-
-font-size: 8rem; font-weight: 900; line-height: 4rem;
-
- -webkit-text-stroke: 4px #279324; 
-gap:2rem;
-
-
-}
+    h1{font-size: 8rem; font-weight: 900; line-height: 4rem; -webkit-text-stroke: 4px #279324; gap:2.5rem;}
 .h1-text{font-size: 3rem; font-weight: 700;}
 .h1-site{font-size: 1.5rem;}
 
@@ -822,10 +804,10 @@ h1{
 font-size: 6rem; font-weight: 900; line-height: 4rem;
 
  -webkit-text-stroke: 3px #279324; 
-gap:0.5rem;
-
+gap:1rem;
 
 }
+.h1-author{-webkit-text-stroke: 3px #5d0051;}
 .h1-text{font-size: 1.8rem; font-weight: 700;}
 .h1-site{font-size: 1.2rem;}
 }
