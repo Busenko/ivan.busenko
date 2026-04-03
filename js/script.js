@@ -131,7 +131,10 @@ function itemsControl() {
             title.addEventListener('click', function () {
                 const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
 
+                if (isOpen) return;
+
                 let heightLostAbove = 0;
+
 
                 coll.forEach(otherItem => {
                     if (otherItem !== item) {
@@ -139,6 +142,7 @@ function itemsControl() {
                         const otherImage = otherItem.querySelector('.img-rotate');
                         
                         if (otherContent && otherContent.style.maxHeight && otherContent.style.maxHeight !== '0px') {
+
                             if (otherItem.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING) {
                                 heightLostAbove += otherContent.scrollHeight;
                             }
@@ -151,44 +155,45 @@ function itemsControl() {
                     }
                 });
 
-                if (!isOpen) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    if (image) image.classList.add('rotated');
-                    
-                    if (item.querySelector('#thanosdog') && typeof skillsAnim !== 'undefined') {
-                        skillsAnim.forcePlay();
-                        
-                    }
-                    // ///////////////////////////////////////////////////////////////////////////////DELETE
-                      if (item.querySelector('#thanosdog1') && typeof skillsAnim1 !== 'undefined') {
-                        skillsAnim1.forcePlay();
-                        
-                    }
-                      if (item.querySelector('#thanosdog2') && typeof skillsAnim2 !== 'undefined') {
-                        skillsAnim2.forcePlay();
-                        
-                    }
-                     // ///////////////////////////////////////////////////////////////////////////////DELETE
+                content.style.maxHeight = content.scrollHeight + 'px';
+                if (image) image.classList.add('rotated');
+                
 
-                    const headerHeight = title.offsetHeight; 
-                    const contentHeight = content.scrollHeight; 
-                    const finalItemHeight = headerHeight + contentHeight;
-                    const currentItemTop = item.getBoundingClientRect().top + window.scrollY;
-                    const futureItemTop = currentItemTop - heightLostAbove;
-                    const centerPosition = futureItemTop - (window.innerHeight / 2) + (finalItemHeight / 2);
-
-                    window.scrollTo({
-                        top: centerPosition,
-                        behavior: 'smooth'
-                    });
-                } 
-                else {
-                    content.style.maxHeight = '0px';
-                    if (image) image.classList.remove('rotated');
+                if (item.querySelector('#thanosdog') && typeof skillsAnim !== 'undefined') {
+                    skillsAnim.forcePlay();
                 }
+                if (item.querySelector('#thanosdog1') && typeof skillsAnim1 !== 'undefined') {
+                    skillsAnim1.forcePlay();
+                }
+                if (item.querySelector('#thanosdog2') && typeof skillsAnim2 !== 'undefined') {
+                    skillsAnim2.forcePlay();
+                }
+
+
+                const headerHeight = title.offsetHeight; 
+                const contentHeight = content.scrollHeight; 
+                const finalItemHeight = headerHeight + contentHeight;
+                const currentItemTop = item.getBoundingClientRect().top + window.scrollY;
+                const futureItemTop = currentItemTop - heightLostAbove;
+                const centerPosition = futureItemTop - (window.innerHeight / 2) + (finalItemHeight / 2);
+
+                window.scrollTo({
+                    top: centerPosition,
+                    behavior: 'smooth'
+                });
             });
         }
     });
+
+
+    const firstContent = coll[0].querySelector('.item-info');
+    const firstImage = coll[0].querySelector('.img-rotate');
+    if (firstContent) {
+        firstContent.style.maxHeight = firstContent.scrollHeight + 'px';
+    }
+    if (firstImage) {
+        firstImage.classList.add('rotated');
+    }
 
     let resizeTimeout;
     window.addEventListener('resize', function () {
@@ -196,6 +201,7 @@ function itemsControl() {
         resizeTimeout = setTimeout(() => {
             coll.forEach(item => {
                 const content = item.querySelector('.item-info');
+    
                 if (content && content.style.maxHeight && content.style.maxHeight !== '0px') {
                     content.style.maxHeight = content.scrollHeight + 'px';
                 }
