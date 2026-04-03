@@ -543,7 +543,7 @@ color: #59006d;
 }
 
 .h1-none{
-    position: absolute;
+position: absolute;
     width: 1px;
     height: 1px;
     margin: -1px;
@@ -551,6 +551,7 @@ color: #59006d;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
+    white-space: nowrap;
 }
 
 
