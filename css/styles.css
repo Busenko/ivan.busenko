@@ -1056,12 +1056,24 @@ background:
 }
 
 
+
 .form-order input:-webkit-autofill,
-.form-order textarea:-webkit-autofill {
+.form-order input:-webkit-autofill:hover, 
+.form-order input:-webkit-autofill:focus,
+.form-order textarea:-webkit-autofill,
+.form-order textarea:-webkit-autofill:hover,
+.form-order textarea:-webkit-autofill:focus {
+    /* Тінь перекриває жовтий/блакитний колір браузера */
     -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    /* Колір тексту, який ти хочеш бачити */
     -webkit-text-fill-color: #333 !important;
+    /* Зупиняємо анімацію появи браузерного кольору */
     transition: background-color 5000s ease-in-out 0s;
 }
+.form-order input:-webkit-autofill {
+    background-clip: content-box !important;
+}
+
 
 
 .input-group {
